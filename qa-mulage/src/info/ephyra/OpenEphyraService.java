@@ -64,7 +64,8 @@ import edu.umich.clarity.thrift.SchedulerService;
 import edu.umich.clarity.thrift.THostPort;
 
 import java.util.ArrayList;
-
+import com.opencsv.CSVWriter;
+import java.io.FileWriter;
 /**
  * <code>OpenEphyra</code> is an open framework for question answering (QA).
  * 
@@ -112,8 +113,16 @@ public class OpenEphyraService implements IPAService.Iface {
 
 	private static SchedulerService.Client scheduler_client;
 	private static IPAService.Client service_client;
+	private static CSVWriter csvWriter = null;
+	private static final String FILE_HEADER = "qsize";
 
 	public void initialize() {
+		try {
+            		csvWriter = new CSVWriter(new FileWriter("qa_qsize.csv"), ',');
+            		csvWriter.writeNext(FILE_HEADER.split(","));
+        	} catch (IOException e) {
+        	    e.printStackTrace();
+        	}
 		RegReply regReply = null;
 		try {
 			scheduler_client = TClient.creatSchedulerClient(SCHEDULER_IP,
@@ -195,6 +204,8 @@ public class OpenEphyraService implements IPAService.Iface {
 			while (true) {
 				try {
 					QuerySpec query = queryQueue.take();
+					String csvEntry = "" + queryQueue.size() + ",";
+					csvWriter.writeNext(csvEntry.split(","));
 					// timestamp the query when it is enqueued (end)
 					// this is also the timestamp for the start of serving
 					// (start)
