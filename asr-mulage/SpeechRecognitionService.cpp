@@ -124,12 +124,21 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 				cout << "the queuing time for the query is " << process_start_time - queuing_start_time << endl;	
 				spec->timestamp.push_back(process_start_time);
+				
 			//call the query	
-				execute_asr(spec->input);
+				int rand_input = rand() % this->input_list.size();	
+				execute_asr(this->input_list.at(rand_input));
+//				execute_asr(spec->input);
 				
 				gettimeofday(&now, 0);
 				process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 				cout << "the serving time for the query is " << process_end_time - process_start_time << endl;	
+				cout << "the number of remain items in the asr queue is " << this->qq.size() << endl;	
+				
+				fstream log;
+				log.open("asr.log", std::ofstream::out | std::ofstream::app);
+				log << this->qq.size() << endl;
+				log.close();
 				
 				spec->timestamp.push_back(process_end_time);
 				spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
@@ -181,11 +190,19 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					cout << "reaching the final service stage of the workflow" << endl;
 				}
 			}
+			
+			//parse the possible inputs	
+			ifstream input("input/input.txt");
+			for(string line; getline(input, line); ) {
+				input_list.push_back(line);
+				cout << line << endl;
+			}
 			// 2. launch the helper thread
 			boost::thread helper(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this));
 		}
 
 	private:
+		vector<String> input_list;
 		QuerySpec newSpec;
 		ThreadSafePriorityQueue<QuerySpec> qq;		//query queue
 		double budget;
@@ -270,6 +287,12 @@ int main(int argc, char **argv){
 	TServers tServer;
 	thread thrift_server;
 	cout << "Starting the speech recognition service..." << endl;
+	
+	fstream log;
+	log.open("asr.log", std::ofstream::out | std::ofstream::app);
+	log << "qlen" << endl;
+	log.close();
+	
 	// tServer.launchSingleThreadThriftServer(9092, processor);
 	tServer.launchSingleThreadThriftServer(9092, processor, thrift_server);
 	speechRecognition->initialize();
