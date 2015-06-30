@@ -127,7 +127,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
 				auto spec = this->qq.wait_and_pop();
 				queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1);
-				cout << "asr queue length is " << this->qq.size() << endl;	
+				cout << "===================================================================" << endl;
+				cout << "IM queue length is " << this->qq.size() << endl;	
 				gettimeofday(&now, 0);
 				process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 				spec->timestamp.push_back(process_start_time);
@@ -136,12 +137,15 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				int rand_input = rand() % this->input_list.size();	
 				match_img(this->input_list.at(rand_input));
 //				match_img(spec->input);
-				
 				gettimeofday(&now, 0);
 				process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-				cout << "The queuing time is " << process_start_time - queuing_start_time << "ms, " 
-					<< "serving time is " << process_end_time - process_start_time << " ms."<< endl;	
+				
+				this->num_completed ++;	
+				
+				cout << "Queuing time is " << process_start_time - queuing_start_time << " ms, " 
+					<< "Serving time is " << process_end_time - process_start_time << " ms."<< endl;	
 				cout << "Num of completed queries: " << this->num_completed << endl; 
+				cout << "===================================================================" << endl;
 				
 				fstream log;
 				log.open("im.log", std::ofstream::out | std::ofstream::app);
@@ -396,7 +400,7 @@ int main(int argc, char **argv){
 	cout << "Starting the image matching service..." << endl;
 
 	fstream log;
-	log.open("im.log", std::ofstream::out | std::ofstream::app);
+	log.open("im.log", std::ofstream::out);
 	log << "qlen" << endl;
 	log.close();
 

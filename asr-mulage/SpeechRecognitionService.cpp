@@ -106,7 +106,6 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			newSpec.timestamp.push_back(current);
 			// 2. put the query to a thread saft queue structure
 			qq.push(newSpec);
-			cout << "~~~~~~~~~~~~~~~~length of queue is " << qq.size() << "~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 			// 3. a private class generates a helper thread to process the query from the queue
   		}
 		
@@ -121,7 +120,8 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
 				auto spec = this->qq.wait_and_pop();
 				queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1);
-				cout << "asr queue length is " << this->qq.size() << endl;	
+				cout << "===================================================================" << endl;
+				cout << "ASR queue length is " << this->qq.size() << endl;	
 				
 				gettimeofday(&now, 0);
 				process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
@@ -136,9 +136,10 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 				this->num_completed++;
 
-				cout << "The queuing time is " << process_start_time - queuing_start_time << "ms, " 
-					<< "serving time is " << process_end_time - process_start_time << " ms."<< endl;	
+				cout << "Queuing time is " << process_start_time - queuing_start_time << " ms, " 
+					<< "Serving time is " << process_end_time - process_start_time << " ms."<< endl;	
 				cout << "Num of completed queries: " << this->num_completed << endl; 
+				cout << "===================================================================" << endl;
 				
 				fstream log;
 				log.open("asr.log", std::ofstream::out | std::ofstream::app);
@@ -149,7 +150,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
 
 				ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
-///*		
+				
 				int length = this->qq.size();
 				for(int i=0;i<length;i++) {
 					auto waiting_spec = this->qq.wait_and_pop();
@@ -159,7 +160,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				
 				for(int i=0;i<length;i++)
 					qq.push( *(waiting_queries.wait_and_pop()) );
-//*/
+				
 				this->service_client->submitQuery(*spec);
 			}
 		}
@@ -298,7 +299,7 @@ int main(int argc, char **argv){
 	cout << "Starting the speech recognition service..." << endl;
 	
 	fstream log;
-	log.open("asr.log", std::ofstream::out | std::ofstream::app);
+	log.open("asr.log", std::ofstream::out);
 	log << "qlen" << endl;
 	log.close();
 	
