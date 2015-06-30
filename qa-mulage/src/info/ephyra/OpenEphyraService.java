@@ -140,8 +140,9 @@ public class OpenEphyraService implements IPAService.Iface {
 		total_num_question = getTotalLineNum(new File(QUESTION_FILE_PATH));
 		qaInstance = new OpenEphyra();
 		try {
-            		csvWriter = new CSVWriter(new FileWriter("/home/hailong/mulage_project/qa-mulage/qa_qsize.csv"), ',');
+            		csvWriter = new CSVWriter(new FileWriter("/home/hailong/mulage_project/qa-mulage/qa_qsize.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);
             		csvWriter.writeNext(FILE_HEADER.split(","));
+			csvWriter.flush();
         	} catch (IOException e) {
         	    e.printStackTrace();
         	}
@@ -214,6 +215,7 @@ public class OpenEphyraService implements IPAService.Iface {
 
 	private class processQueryRunnable implements Runnable {
 		private boolean final_stage;
+		private long counter = 0;
 		public processQueryRunnable(boolean final_stage) {
 			this.final_stage = final_stage;
 		}
@@ -226,15 +228,18 @@ public class OpenEphyraService implements IPAService.Iface {
 					QuerySpec query = queryQueue.take();
 					String csvEntry = "" + queryQueue.size() + ",";
 					csvWriter.writeNext(csvEntry.split(","));
+					csvWriter.flush();
 					// timestamp the query when it is enqueued (end)
 					// this is also the timestamp for the start of serving
 					// (start)
+					Random randGen = new Random();
+					int randLine = randGen.nextInt(total_num_question);
+					String question = getQuestion(new File(QUESTION_FILE_PATH), randLine);
+					
 					long queuing_start_time = query.getTimestamp().get(
 							query.getTimestamp().size() - 1);
 					long process_start_time = System.currentTimeMillis();
 					query.getTimestamp().add(process_start_time);
-					LOG.info("the queuing time for the query is "
-							+ (process_start_time - queuing_start_time) + "ms");
 					/**
 					 * TODO 1. use the latency model to predict the serving time
 					 * 2. based on the queuing and serving time to see if the
@@ -247,13 +252,17 @@ public class OpenEphyraService implements IPAService.Iface {
 					 */
 					// Thread.sleep(100);
 					// qaInstance.commandLine(new String(query.bufferForInput().array()).trim());
-					Random randGen = new Random();
-					int randLine = randGen.nextInt(total_num_question);
-					String question = getQuestion(new File(QUESTION_FILE_PATH), randLine);
 					qaInstance.commandLine(question);
 					long process_end_time = System.currentTimeMillis();
+					LOG.info("===============================================");
+					LOG.info("there are " + queryQueue.size() + " queries waiting in the queue");
+					LOG.info("the queuing time for the query is "
+                                                        + (process_start_time - queuing_start_time) + "ms");
 					LOG.info("the serving time for the query is "
 							+ (process_end_time - process_start_time) + "ms");
+					counter++;
+					LOG.info(counter + " queries have been processed so far...");
+					LOG.info("===============================================");
 					// timestamp the query when it is served (end)
 					query.getTimestamp().add(process_end_time);
 					// update the query budget
@@ -296,7 +305,9 @@ public class OpenEphyraService implements IPAService.Iface {
 				} catch (InterruptedException e) {
 					LOG.error("failed to pop the query from the queue"
 							+ e.getMessage());
-				}
+				} catch (IOException e) {
+                    			e.printStackTrace();
+                		}
 			}
 		}
 	}
@@ -308,16 +319,15 @@ public class OpenEphyraService implements IPAService.Iface {
 	 */
 	public static void main(String[] args) throws IOException, TException {
 		// enable output of status and error messages
-                MsgPrinter.enableStatusMsgs(true);
-                MsgPrinter.enableErrorMsgs(true);
+                // MsgPrinter.enableStatusMsgs(true);
+                // MsgPrinter.enableErrorMsgs(true);
 
 		OpenEphyraService qaService = new OpenEphyraService();
 		IPAService.Processor<IPAService.Iface> processor = new IPAService.Processor<IPAService.Iface>(
 				qaService);
 		TServers.launchSingleThreadThriftServer(SERVICE_PORT, processor);
+		LOG.info("starting " + SERVICE_NAME + " service at " + SERVICE_IP + ":" + SERVICE_PORT);
 		qaService.initialize();
-		LOG.info("starting " + SERVICE_NAME + " service at " + SERVICE_IP
-				+ ":" + SERVICE_PORT);
 		// MsgPrinter.printStatusMsg("QA service started at " + SERVICE_IP + ":" + SERVICE_PORT);
 		// set log file and enable logging
 		// Logger.setLogfile("log/OpenEphyra");
