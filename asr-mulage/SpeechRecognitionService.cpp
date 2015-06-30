@@ -169,7 +169,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				for(int i=0;i<length;i++)
 					qq.push( *(waiting_queries.wait_and_pop()) );
 				
-//				this->service_client->submitQuery(*spec);
+				this->service_client->submitQuery(*spec);
 			}
 		}
 
