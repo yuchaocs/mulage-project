@@ -156,14 +156,21 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
 
 				ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
-			
-				int length = this->qq.size();	
+/*			
 				for(int i=0;i<length;i++) {
 					auto waiting_spec = this->qq.wait_and_pop();
 					waiting_spec->__set_budget(spec->budget - (process_end_time - process_start_time) );
 					waiting_queries.push(*waiting_spec);
 				}
+*/				
+				auto waiting_spec = this->qq.try_pop();
+				while(waiting_spec != nullptr) {
+					waiting_spec->__set_budget(spec->budget - (process_end_time - process_start_time) );
+					waiting_queries.push(*waiting_spec);
+					waiting_spec = this->qq.try_pop();
+				}
 				
+				int length = waiting_queries.size();	
 				for(int i=0;i<length;i++)
 					qq.push( *(waiting_queries.wait_and_pop()) );
 
