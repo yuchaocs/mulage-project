@@ -66,6 +66,10 @@ import edu.umich.clarity.thrift.THostPort;
 import java.util.ArrayList;
 import com.opencsv.CSVWriter;
 import java.io.FileWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.LineNumberReader;
+
 /**
  * <code>OpenEphyra</code> is an open framework for question answering (QA).
  * 
@@ -73,30 +77,8 @@ import java.io.FileWriter;
  * @version 2008-03-23
  */
 public class OpenEphyraService implements IPAService.Iface {
-	/** Factoid question type. */
-	protected static final String FACTOID = "FACTOID";
-	/** List question type. */
-	protected static final String LIST = "LIST";
 	
-	/** Maximum number of factoid answers. */
-	protected static final int FACTOID_MAX_ANSWERS = 1;
-	/** Absolute threshold for factoid answer scores. */
-	protected static final float FACTOID_ABS_THRESH = 0;
-	/** Relative threshold for list answer scores (fraction of top score). */
-	protected static final float LIST_REL_THRESH = 0.1f;
-	
-	/** Serialized classifier for score normalization. */
-	public static final String NORMALIZER =
-		"res/scorenormalization/classifiers/" +
-		"AdaBoost70_" +
-		"Score+Extractors_" +
-		"TREC10+TREC11+TREC12+TREC13+TREC14+TREC15+TREC8+TREC9" +
-		".serialized";
-	
-	/** The directory of Ephyra, required when Ephyra is used as an API. */
-	protected String dir;
-	
-	private static final String SERVICE_NANE = "qa";
+	private static final String SERVICE_NAME = "qa";
 	private static final String SERVICE_IP = "clarity28.eecs.umich.edu";
 	private static final int SERVICE_PORT = 7788;
 	private static final String SCHEDULER_IP = "141.212.107.226";
@@ -105,6 +87,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static List<THostPort> service_list;
 	private static String DOWNSTREAM_SERVICE_IP;
 	private static int DOWNSTREAM_SERVICE_PORT;
+	private static final String QUESTION_FILE_PATH = "/home/hailong/mulage_project/qa-mulage/input/questions.txt";
 
 	private double budget = 100;
 
@@ -115,10 +98,49 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static IPAService.Client service_client;
 	private static CSVWriter csvWriter = null;
 	private static final String FILE_HEADER = "qsize";
+	private static OpenEphyra qaInstance = null;
+	private static int total_num_question = 0;
 
-	public void initialize() {
+	private int getTotalLineNum(File file) {
+        	String line = null;  
+        	int line_num = 0;
 		try {
-            		csvWriter = new CSVWriter(new FileWriter("qa_qsize.csv"), ',');
+			FileReader in = new FileReader(file);  
+        		LineNumberReader reader = new LineNumberReader(in);  
+        		while((line = reader.readLine()) != null) {  
+            			line_num++;  
+        		}  
+        		reader.close();  
+        		in.close(); 
+		} catch(IOException ex) {
+			ex.printStackTrace();
+		} 
+        	return line_num;
+	}
+	
+	private String getQuestion(File file, int line) {
+		String content = null;
+                int line_num = 0;
+                try {
+			FileReader in = new FileReader(file);
+                	LineNumberReader reader = new LineNumberReader(in);
+                        while((content = reader.readLine()) != null) {
+				if(line_num == line)
+					break;
+                                line_num++;
+                        }
+                        reader.close();
+                        in.close();
+                } catch(IOException ex) {
+                        ex.printStackTrace();
+                }
+                return content;
+	}
+	public void initialize() {
+		total_num_question = getTotalLineNum(new File(QUESTION_FILE_PATH));
+		qaInstance = new OpenEphyra();
+		try {
+            		csvWriter = new CSVWriter(new FileWriter("/home/hailong/mulage_project/qa-mulage/qa_qsize.csv"), ',');
             		csvWriter.writeNext(FILE_HEADER.split(","));
         	} catch (IOException e) {
         	    e.printStackTrace();
@@ -133,12 +155,12 @@ public class OpenEphyraService implements IPAService.Iface {
 		}
 		try {
 			THostPort hostPort = new THostPort(SERVICE_IP, SERVICE_PORT);
-			RegMessage regMessage = new RegMessage(SERVICE_NANE, hostPort,
+			RegMessage regMessage = new RegMessage(SERVICE_NAME, hostPort,
 					budget);
 			LOG.info("registering to command center runnig at " + SCHEDULER_IP
 					+ ":" + SCHEDULER_PORT);
 			regReply = scheduler_client.registerBackend(regMessage);
-			LOG.info("service stage " + SERVICE_NANE
+			LOG.info("service stage " + SERVICE_NAME
 					+ " successfully registered itself at " + SERVICE_IP + ":"
 					+ SERVICE_PORT);
 			service_list = regReply.getService_list();
@@ -175,7 +197,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	@Override
 	public void updatBudget(double budget) throws TException {
 		this.budget = budget;
-		LOG.info("service " + SERVICE_NANE + " at " + SERVICE_IP + ":"
+		LOG.info("service " + SERVICE_NAME + " at " + SERVICE_IP + ":"
 				+ SERVICE_PORT + " update its budget to " + budget);
 	}
 
@@ -191,11 +213,9 @@ public class OpenEphyraService implements IPAService.Iface {
 	}
 
 	private class processQueryRunnable implements Runnable {
-		private OpenEphyra qaInstance;
 		private boolean final_stage;
 		public processQueryRunnable(boolean final_stage) {
 			this.final_stage = final_stage;
-			qaInstance = new OpenEphyra();
 		}
 
 		@Override
@@ -226,7 +246,11 @@ public class OpenEphyraService implements IPAService.Iface {
 					 * waiting in the queue
 					 */
 					// Thread.sleep(100);
-					qaInstance.commandLine(new String(query.bufferForInput().array()).trim());
+					// qaInstance.commandLine(new String(query.bufferForInput().array()).trim());
+					Random randGen = new Random();
+					int randLine = randGen.nextInt(total_num_question);
+					String question = getQuestion(new File(QUESTION_FILE_PATH), randLine);
+					qaInstance.commandLine(question);
 					long process_end_time = System.currentTimeMillis();
 					LOG.info("the serving time for the query is "
 							+ (process_end_time - process_start_time) + "ms");
@@ -291,10 +315,10 @@ public class OpenEphyraService implements IPAService.Iface {
 		IPAService.Processor<IPAService.Iface> processor = new IPAService.Processor<IPAService.Iface>(
 				qaService);
 		TServers.launchSingleThreadThriftServer(SERVICE_PORT, processor);
-		LOG.info("starting " + SERVICE_NANE + " service at " + SCHEDULER_IP
-				+ ":" + SCHEDULER_PORT);
 		qaService.initialize();
-		MsgPrinter.printStatusMsg("QA service started at " + SERVICE_IP + ":" + SERVICE_PORT);
+		LOG.info("starting " + SERVICE_NAME + " service at " + SERVICE_IP
+				+ ":" + SERVICE_PORT);
+		// MsgPrinter.printStatusMsg("QA service started at " + SERVICE_IP + ":" + SERVICE_PORT);
 		// set log file and enable logging
 		// Logger.setLogfile("log/OpenEphyra");
 		// Logger.enableLogging(true);
@@ -308,7 +332,32 @@ public class OpenEphyraService implements IPAService.Iface {
 	 * 
 	 * <p>For use as a standalone system.</p>
 	 */
-	public OpenEphyraService() {
+	private class OpenEphyra{
+
+	/** Factoid question type. */
+        protected static final String FACTOID = "FACTOID";
+        /** List question type. */
+        protected static final String LIST = "LIST";
+
+        /** Maximum number of factoid answers. */
+        protected static final int FACTOID_MAX_ANSWERS = 1;
+        /** Absolute threshold for factoid answer scores. */
+        protected static final float FACTOID_ABS_THRESH = 0;
+        /** Relative threshold for list answer scores (fraction of top score). */
+        protected static final float LIST_REL_THRESH = 0.1f;
+
+        /** Serialized classifier for score normalization. */
+        public static final String NORMALIZER =
+                "res/scorenormalization/classifiers/" +
+                "AdaBoost70_" +
+                "Score+Extractors_" +
+                "TREC10+TREC11+TREC12+TREC13+TREC14+TREC15+TREC8+TREC9" +
+                ".serialized";
+
+        /** The directory of Ephyra, required when Ephyra is used as an API. */
+        protected String dir;
+
+	public OpenEphyra() {
 		this("");
 	}
 	
@@ -320,7 +369,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	 * 
 	 * @param dir directory of Ephyra
 	 */
-	public OpenEphyraService(String dir) {
+	public OpenEphyra(String dir) {
 		this.dir = dir;
 		
 		MsgPrinter.printInitializing();
@@ -656,5 +705,6 @@ public class OpenEphyraService implements IPAService.Iface {
 		}
 		
 		return confident.toArray(new Result[confident.size()]);
+	}
 	}
 }

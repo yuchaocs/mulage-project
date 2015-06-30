@@ -85,7 +85,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SCHEDULER_IP = "141.212.107.226";
 			this->SCHEDULER_PORT = 8888;
 			this->SERVICE_IP = "clarity28.eecs.umich.edu";
-			this->SERVICE_PORT = 9092;
+			this->SERVICE_PORT = 9093;
 		}
 		~SpeechRecognitionServiceHandler() {
 		}
@@ -227,16 +227,17 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		string execute_asr(string input) {
 			// TODO 1. transform the binary file into a local wav file
 			// 2. pass the wav file path to pocketsphinx system call
-			struct timeval tp;
-			gettimeofday(&tp, NULL);
-			long int timestamp = tp.tv_sec * 1000000 + tp.tv_usec;
-			ostringstream sstream;
-                        sstream << timestamp;
-			string wav_path = "query-" + sstream.str() + ".wav";
-			ofstream wavfile(wav_path.c_str(), ios::binary);
-                        wavfile.write(input.c_str(), input.size());
-                        wavfile.close();
-			string cmd = "/usr/bin/pocketsphinx_continuous -infile" + wav_path;
+			// struct timeval tp;
+			// gettimeofday(&tp, NULL);
+			// long int timestamp = tp.tv_sec * 1000000 + tp.tv_usec;
+			// ostringstream sstream;
+                        // sstream << timestamp;
+			// string wav_path = "query-" + sstream.str() + ".wav";
+			// ofstream wavfile(wav_path.c_str(), ios::binary);
+                        // wavfile.write(input.c_str(), input.size());
+                        // wavfile.close();
+			// string cmd = "./pocketsphinx_continuous -infile " + wav_path;
+			string cmd = "./pocketsphinx_continuous -infile " + input;
 			char *cstr = new char[cmd.length() + 1];
 			strcpy(cstr, cmd.c_str());
 			return exec_cmd(cstr);
@@ -294,7 +295,7 @@ int main(int argc, char **argv){
 	log.close();
 	
 	// tServer.launchSingleThreadThriftServer(9092, processor);
-	tServer.launchSingleThreadThriftServer(9092, processor, thrift_server);
+	tServer.launchSingleThreadThriftServer(9093, processor, thrift_server);
 	speechRecognition->initialize();
 	// server.serve();
 	cout << "Done..." << endl;

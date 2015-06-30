@@ -240,31 +240,35 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		void match_img(string &query_img) {
 			
 			// save the query image into local disk
-                        gettimeofday(&tp, NULL);
-                        long int timestamp = tp.tv_sec * 1000000 + tp.tv_usec;
-			ostringstream sstream;
-			sstream << timestamp;
-                        string image_path = "input-" + sstream.str() + ".jpg";
-                        ofstream imagefile(image_path.c_str(), ios::binary);
-                        imagefile.write(query_img.c_str(), query_img.size());
-                        imagefile.close();
+                        // gettimeofday(&tp, NULL);
+                        // long int timestamp = tp.tv_sec * 1000000 + tp.tv_usec;
+			// ostringstream sstream;
+			// sstream << timestamp;
+                        // string image_path = "input-" + sstream.str() + ".jpg";
+                        // ofstream imagefile(image_path.c_str(), ios::binary);
+                        // imagefile.write(query_img.c_str(), query_img.size());
+                        // imagefile.close();
+			cout << "image query is " << query_img << endl;
+			string image_path = query_img;
 			
+			
+                        gettimeofday(&tv1, NULL);
 			// feature extraction
                         Mat imgInput = imread(image_path, CV_LOAD_IMAGE_GRAYSCALE);
                         vector<KeyPoint> features;
-                        gettimeofday(&tv1, NULL);
+                        // gettimeofday(&tv1, NULL);
                         detector->detect(imgInput, features);
-                        gettimeofday(&tv2, NULL);
+                        // gettimeofday(&tv2, NULL);
 
 			 // feature description
                         Mat descriptors;
-                        gettimeofday(&tv1, NULL);
+                        // gettimeofday(&tv1, NULL);
                         extractor->compute(imgInput, features, descriptors);
                         descriptors.convertTo(descriptors, CV_32F);
-                        gettimeofday(&tv2, NULL);
+                        // gettimeofday(&tv2, NULL);
 
 			// image matching
-			gettimeofday(&tv1, NULL);
+			// gettimeofday(&tv1, NULL);
 			string response = exec_match(descriptors, MATCHING_METHOD);
 			gettimeofday(&tv2, NULL);
 
