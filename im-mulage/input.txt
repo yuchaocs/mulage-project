@@ -269,7 +269,6 @@ input/statue-of-liberty/6564edb6-9c17-4b30-a761-09b926943725.jpg
 input/statue-of-liberty/1cf3d7ad-bf14-410a-97dd-7d3c56ede3f5.jpg
 input/statue-of-liberty/943caba9-6ec5-4bce-9f93-1518a0042849.jpg
 input/statue-of-liberty/174b388f-7073-47af-a009-ed93e156e9f0.jpg
-input/statue-of-liberty/d3fa3e8f-07fb-4876-a015-60e79b9743e0.jpg
 input/statue-of-liberty/8f3cd553-06fd-4860-ba37-d4acce5d18d0.jpg
 input/statue-of-liberty/786b08a8-3315-43be-bd35-6e6d486059eb.jpg
 input/statue-of-liberty/8cd71bee-059d-4eca-a99d-dd14f83c2f36.jpg
@@ -311,7 +310,6 @@ input/statue-of-liberty/8b26387a-ead4-4b6c-8359-e4a599fa4c66.jpg
 input/statue-of-liberty/46b611f2-814c-4ba7-a11c-7993342e5db2.jpg
 input/statue-of-liberty/3eb6dc15-cbee-4c1d-86c4-5f82e723677b.jpg
 input/statue-of-liberty/cf118992-601f-491f-94cf-7ed583999c97.jpg
-input/statue-of-liberty/3f4eb53e-5605-4f5b-bf8f-966fe7158241.jpg
 input/statue-of-liberty/479e8558-79ae-4d96-9336-0743971f2c44.jpg
 input/statue-of-liberty/22ecd097-0bb2-4d03-b554-a1023174f2ae.jpg
 input/statue-of-liberty/10665a28-d5c6-426c-995c-d73e29a24d7f.jpg
@@ -642,7 +640,6 @@ input/tower-pisa/70183fdb-6e2c-4f0b-9d54-86157bf683a8.jpg
 input/tower-pisa/91dfb689-8ce9-4ad1-8734-2c4391ffb52e.jpg
 input/tower-pisa/94a34391-c0dc-44e0-a43f-8b7e9ebb103e.jpg
 input/tower-pisa/a99dbce1-3403-417a-a906-09862b6ec114.jpg
-input/tower-pisa/4052f496-1f9d-48cb-8fa4-45cec40a192b.jpg
 input/tower-pisa/97b93309-d3f9-4b33-9fb9-d045f512ece7.jpg
 input/tower-pisa/2f9e12ae-8d67-4fee-b640-4c3151939dc9.jpg
 input/tower-pisa/510cce65-fa11-448f-bf3a-c21df871cbdd.jpg
@@ -651,7 +648,6 @@ input/tower-pisa/c6f2e595-7200-4a7f-b97e-c14c9dc0e401.jpg
 input/tower-pisa/847435d9-9e35-4e1f-8526-aab4071387a4.jpg
 input/tower-pisa/48942e9b-d360-4de2-ba55-3b08b8d528c6.jpg
 input/tower-pisa/2333eb27-9478-47e9-8625-455dd99cca27.jpg
-input/tower-pisa/211cc16a-08df-4d92-b00b-a8653d2ea873.jpg
 input/tower-pisa/35e0b8a6-c76b-4c76-adc1-60e80a926618.jpg
 input/tower-pisa/b3a0926b-d611-41f0-9f8f-5c12c37f9269.jpg
 input/tower-pisa/f1226f77-1ebc-4f6b-85d0-f5e6fdb58705.jpg

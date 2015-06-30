@@ -47,8 +47,8 @@
 #include "commons.h"
 
 // import the Thread Safe Priority Queue
-#include "ThreadSafePriorityQueue.hpp"
-//#include "ThreadPool.hpp"
+//#include "ThreadSafePriorityQueue.hpp"
+#include "ThreadPool.hpp"
 
 // define the namespace
 using namespace std;
@@ -116,6 +116,12 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				int64_t queuing_start_time;
 				int64_t process_start_time;
 				int64_t process_end_time;
+				int log_file = rand() % this->input_list.size();
+				
+				fstream log;
+				log.open("asr"+std::to_string(log_file)+".csv", std::ofstream::out);
+				log << "qlen" << endl;
+				log.close();
 
 			while(1) {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
@@ -142,8 +148,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				cout << "Num of completed queries: " << this->num_completed << endl; 
 				cout << "===================================================================" << endl;
 				
-				fstream log;
-				log.open("asr.csv", std::ofstream::out | std::ofstream::app);
+				log.open("asr"+std::to_string(log_file)+".csv", std::ofstream::out | std::ofstream::app);
 				log << this->qq.size() << endl;
 				log.close();
 				
@@ -218,8 +223,8 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			boost::thread helper(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this));
 //			int ret = std::system("cpufreq-set -c 0 -f 1500000");
 
-//			ThreadPool<void> tp(5);
-//			boost::shared_future<void> f = tp.enqueue(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this), 1000);
+			ThreadPool<void> tp(2);
+			boost::shared_future<void> f = tp.enqueue(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this), 1000);
 		}
 
 	private:
@@ -311,10 +316,6 @@ int main(int argc, char **argv){
 	thread thrift_server;
 	cout << "Starting the speech recognition service..." << endl;
 	
-	fstream log;
-	log.open("asr.csv", std::ofstream::out);
-	log << "qlen" << endl;
-	log.close();
 	
 	// tServer.launchSingleThreadThriftServer(9092, processor);
 	tServer.launchSingleThreadThriftServer(9093, processor, thrift_server);

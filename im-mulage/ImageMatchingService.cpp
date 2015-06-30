@@ -47,8 +47,8 @@
 #include "commons.h"
 
 // import the Thread Safe Priority Queue
-#include "ThreadSafePriorityQueue.hpp"
-//#include "ThreadPool.hpp"
+//#include "ThreadSafePriorityQueue.hpp"
+#include "ThreadPool.hpp"
 
 // define the namespace
 using namespace std;
@@ -123,6 +123,13 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				int64_t queuing_start_time;
 				int64_t process_start_time;
 				int64_t process_end_time;
+				
+				int log_file = rand() % this->input_list.size();
+				
+				fstream log;
+				log.open("im"+std::to_string(log_file)+".csv", std::ofstream::out);
+				log << "qlen" << endl;
+				log.close();
 
 			while(1) {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
@@ -148,10 +155,14 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				cout << "Num of completed queries: " << this->num_completed << endl; 
 				cout << "===================================================================" << endl;
 				
-				fstream log;
-				log.open("im.csv", std::ofstream::out | std::ofstream::app);
+				log.open("im"+std::to_string(log_file)+".csv", std::ofstream::out | std::ofstream::app);
 				log << this->qq.size() << endl;
 				log.close();
+				
+//				fstream log;
+//				log.open("im.csv", std::ofstream::out | std::ofstream::app);
+//				log << this->qq.size() << endl;
+//				log.close();
 				
 				spec->timestamp.push_back(process_end_time);
 				spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
@@ -224,8 +235,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			
 //			int ret = std::system("cpufreq-set -c 0 -f 1500000");
 			
-//			ThreadPool<void> tp(5);
-//			boost::shared_future<void> f = tp.enqueue(boost::bind(&ImageMatchingServiceHandler::launchQuery, this), 1000);
+			ThreadPool<void> tp(2);
+			boost::shared_future<void> f = tp.enqueue(boost::bind(&ImageMatchingServiceHandler::launchQuery, this), 1000);
 		}
 
 	private:
@@ -412,10 +423,10 @@ int main(int argc, char **argv){
 	thread thrift_server;
 	cout << "Starting the image matching service..." << endl;
 
-	fstream log;
-	log.open("im.csv", std::ofstream::out);
-	log << "qlen" << endl;
-	log.close();
+//	fstream log;
+//	log.open("im.csv", std::ofstream::out);
+//	log << "qlen" << endl;
+//	log.close();
 
 	// tServer.launchSingleThreadThriftServer(9093, processor);
 	tServer.launchSingleThreadThriftServer(9092, processor, thrift_server);
