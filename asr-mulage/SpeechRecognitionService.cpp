@@ -106,6 +106,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			newSpec.timestamp.push_back(current);
 			// 2. put the query to a thread saft queue structure
 			qq.push(newSpec);
+			cout << "~~~~~~~~~~~~~~~~length of queue is " << qq.size() << "~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 			// 3. a private class generates a helper thread to process the query from the queue
   		}
 		
@@ -148,16 +149,21 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
 
 				ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
-				
+/*			
+				cout << "before reorder queue length is "	<< this->qq.size() << endl;
 				for(int i=0;i<this->qq.size();i++) {
 					auto waiting_spec = this->qq.wait_and_pop();
 					waiting_spec->__set_budget(spec->budget - (process_end_time - process_start_time) );
 					waiting_queries.push(*waiting_spec);
 				}
+				
+				cout << "waiting queue length is "	<< waiting_queries.size() << endl;
 
 				for(int i=0;i<waiting_queries.size();i++)
 					qq.push( *(waiting_queries.wait_and_pop()) );
-
+				
+				cout << "**** qq queue length is "	<< this->qq.size() << endl;
+*/
 				this->service_client->submitQuery(*spec);
 			}
 		}
