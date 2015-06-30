@@ -120,9 +120,10 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
 				auto spec = this->qq.wait_and_pop();
 				queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1);
+				cout << "asr queue length is " << this->qq.size() << endl;	
+				
 				gettimeofday(&now, 0);
 				process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-				cout << "the queuing time for the query is " << process_start_time - queuing_start_time << endl;	
 				spec->timestamp.push_back(process_start_time);
 				
 			//call the query	
@@ -132,8 +133,11 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				
 				gettimeofday(&now, 0);
 				process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-				cout << "the serving time for the query is " << process_end_time - process_start_time << endl;	
-				cout << "the number of remain items in the asr queue is " << this->qq.size() << endl;	
+				this->num_completed++;
+
+				cout << "The queuing time is " << process_start_time - queuing_start_time << "ms, " 
+					<< "serving time is " << process_end_time - process_start_time << " ms."<< endl;	
+				cout << "Num of completed queries: " << this->num_completed << endl; 
 				
 				fstream log;
 				log.open("asr.log", std::ofstream::out | std::ofstream::app);
@@ -190,12 +194,13 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					cout << "reaching the final service stage of the workflow" << endl;
 				}
 			}
-			
+		
+			this->num_completed = 0;	
 			//parse the possible inputs	
-			ifstream input("input/input.txt");
+			ifstream input("input.txt");
 			for(string line; getline(input, line); ) {
 				input_list.push_back(line);
-				cout << line << endl;
+//				cout << line << endl;
 			}
 			// 2. launch the helper thread
 			boost::thread helper(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this));
@@ -204,6 +209,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 	private:
 		vector<String> input_list;
 		QuerySpec newSpec;
+		int num_completed;
 		ThreadSafePriorityQueue<QuerySpec> qq;		//query queue
 		double budget;
 		string SERVICE_NAME;
@@ -237,7 +243,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
                         // wavfile.write(input.c_str(), input.size());
                         // wavfile.close();
 			// string cmd = "./pocketsphinx_continuous -infile " + wav_path;
-			string cmd = "./pocketsphinx_continuous -infile " + input;
+			string cmd = "./pocketsphinx_continuous -logfn /dev/null -infile " + input;
 			char *cstr = new char[cmd.length() + 1];
 			strcpy(cstr, cmd.c_str());
 			return exec_cmd(cstr);
