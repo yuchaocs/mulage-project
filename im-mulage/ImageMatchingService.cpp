@@ -48,6 +48,7 @@
 
 // import the Thread Safe Priority Queue
 #include "ThreadSafePriorityQueue.hpp"
+//#include "ThreadPool.hpp"
 
 // define the namespace
 using namespace std;
@@ -220,6 +221,11 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			}
 			// 2. launch the helper thread
 			boost::thread helper(boost::bind(&ImageMatchingServiceHandler::launchQuery, this));
+			
+//			int ret = std::system("cpufreq-set -c 0 -f 1500000");
+			
+//			ThreadPool<void> tp(5);
+//			boost::shared_future<void> f = tp.enqueue(boost::bind(&ImageMatchingServiceHandler::launchQuery, this), 1000);
 		}
 
 	private:
