@@ -142,7 +142,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				cout << "===================================================================" << endl;
 				
 				fstream log;
-				log.open("asr.log", std::ofstream::out | std::ofstream::app);
+				log.open("asr.csv", std::ofstream::out | std::ofstream::app);
 				log << this->qq.size() << endl;
 				log.close();
 				
@@ -307,7 +307,7 @@ int main(int argc, char **argv){
 	cout << "Starting the speech recognition service..." << endl;
 	
 	fstream log;
-	log.open("asr.log", std::ofstream::out);
+	log.open("asr.csv", std::ofstream::out);
 	log << "qlen" << endl;
 	log.close();
 	

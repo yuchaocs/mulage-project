@@ -148,7 +148,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				cout << "===================================================================" << endl;
 				
 				fstream log;
-				log.open("im.log", std::ofstream::out | std::ofstream::app);
+				log.open("im.csv", std::ofstream::out | std::ofstream::app);
 				log << this->qq.size() << endl;
 				log.close();
 				
@@ -407,7 +407,7 @@ int main(int argc, char **argv){
 	cout << "Starting the image matching service..." << endl;
 
 	fstream log;
-	log.open("im.log", std::ofstream::out);
+	log.open("im.csv", std::ofstream::out);
 	log << "qlen" << endl;
 	log.close();
 
