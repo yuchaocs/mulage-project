@@ -97,6 +97,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SCHEDULER_PORT = scheduler_port;
 			this->SERVICE_IP = service_ip;
 			this->SERVICE_PORT = service_port;
+			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 		}
 		~SpeechRecognitionServiceHandler() {
 		}
@@ -301,10 +302,10 @@ int main(int argc, char **argv){
 	String service_ip;
 	int scheduler_port;
 	String scheduler_ip;
-	service_ip = argv[0];
-	service_port = atoi(argv[1]);
-	scheduler_ip = argv[2];
-	scheduler_port = atoi(argv[3]);
+	service_ip = argv[1];
+	service_port = atoi(argv[2]);
+	scheduler_ip = argv[3];
+	scheduler_port = atoi(argv[4]);
 	
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);

@@ -105,6 +105,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			this->SCHEDULER_PORT = scheduler_port;
 			this->SERVICE_IP = service_ip;
 			this->SERVICE_PORT = service_port;
+			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 			cout << "building the image matching model..." << endl;
 			build_model();
 		}
@@ -398,15 +399,15 @@ int main(int argc, char **argv){
 	// boost::shared_ptr<PosixThreadFactory> threadFactory = boost::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
 	// threadManager->threadFactory(threadFactory);
 	// threadManager->start();
-	
+
 	int service_port;
 	String service_ip;
 	int scheduler_port;
 	String scheduler_ip;
-	service_ip = argv[0];
-	service_port = atoi(argv[1]);
-	scheduler_ip = argv[2];
-	scheduler_port = atoi(argv[3]);
+	service_ip = argv[1];
+	service_port = atoi(argv[2]);
+	scheduler_ip = argv[3];
+	scheduler_port = atoi(argv[4]);
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
