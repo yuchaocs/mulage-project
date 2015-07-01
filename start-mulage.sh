@@ -17,12 +17,14 @@ scheduler_port=8888
 echo "=========================================="
 cd $asrdir
 echo "starting the speech recognition service..."
+./start-asr-service.sh $service_ip $asr_service_port $scheduler_ip $scheduler_port
 cd - > /dev/null
 sleep(5)
 
 echo "=========================================="
 cd $immdir
 echo "starting the image matching service..."
+./start-im-service.sh $service_ip $imm_service_port $scheduler_ip $scheduler_port
 cd - > /dev/null
 sleep(7)
 
