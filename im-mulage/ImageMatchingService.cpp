@@ -112,6 +112,10 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		~ImageMatchingServiceHandler() {
 			delete matcher;
 		}
+
+		int32_t reportQueueLength() {
+                        return this->qq.size();
+                }
 		
 		void updatBudget(const double budget) {
 			this->budget = budget;

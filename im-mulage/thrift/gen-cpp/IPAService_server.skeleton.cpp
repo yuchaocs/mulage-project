@@ -20,6 +20,11 @@ class IPAServiceHandler : virtual public IPAServiceIf {
     // Your initialization goes here
   }
 
+  int32_t reportQueueLength() {
+    // Your implementation goes here
+    printf("reportQueueLength\n");
+  }
+
   void updatBudget(const double budget) {
     // Your implementation goes here
     printf("updatBudget\n");

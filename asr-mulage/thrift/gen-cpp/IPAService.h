@@ -15,6 +15,7 @@
 class IPAServiceIf {
  public:
   virtual ~IPAServiceIf() {}
+  virtual int32_t reportQueueLength() = 0;
   virtual void updatBudget(const double budget) = 0;
   virtual void submitQuery(const  ::QuerySpec& query) = 0;
 };
@@ -46,12 +47,124 @@ class IPAServiceIfSingletonFactory : virtual public IPAServiceIfFactory {
 class IPAServiceNull : virtual public IPAServiceIf {
  public:
   virtual ~IPAServiceNull() {}
+  int32_t reportQueueLength() {
+    int32_t _return = 0;
+    return _return;
+  }
   void updatBudget(const double /* budget */) {
     return;
   }
   void submitQuery(const  ::QuerySpec& /* query */) {
     return;
   }
+};
+
+
+class IPAService_reportQueueLength_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  IPAService_reportQueueLength_args(const IPAService_reportQueueLength_args&);
+  IPAService_reportQueueLength_args& operator=(const IPAService_reportQueueLength_args&);
+  IPAService_reportQueueLength_args() {
+  }
+
+  virtual ~IPAService_reportQueueLength_args() throw();
+
+  bool operator == (const IPAService_reportQueueLength_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const IPAService_reportQueueLength_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const IPAService_reportQueueLength_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_reportQueueLength_args& obj);
+};
+
+
+class IPAService_reportQueueLength_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+
+  virtual ~IPAService_reportQueueLength_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_reportQueueLength_pargs& obj);
+};
+
+typedef struct _IPAService_reportQueueLength_result__isset {
+  _IPAService_reportQueueLength_result__isset() : success(false) {}
+  bool success :1;
+} _IPAService_reportQueueLength_result__isset;
+
+class IPAService_reportQueueLength_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+  IPAService_reportQueueLength_result(const IPAService_reportQueueLength_result&);
+  IPAService_reportQueueLength_result& operator=(const IPAService_reportQueueLength_result&);
+  IPAService_reportQueueLength_result() : success(0) {
+  }
+
+  virtual ~IPAService_reportQueueLength_result() throw();
+  int32_t success;
+
+  _IPAService_reportQueueLength_result__isset __isset;
+
+  void __set_success(const int32_t val);
+
+  bool operator == (const IPAService_reportQueueLength_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const IPAService_reportQueueLength_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const IPAService_reportQueueLength_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_reportQueueLength_result& obj);
+};
+
+typedef struct _IPAService_reportQueueLength_presult__isset {
+  _IPAService_reportQueueLength_presult__isset() : success(false) {}
+  bool success :1;
+} _IPAService_reportQueueLength_presult__isset;
+
+class IPAService_reportQueueLength_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+
+  virtual ~IPAService_reportQueueLength_presult() throw();
+  int32_t* success;
+
+  _IPAService_reportQueueLength_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_reportQueueLength_presult& obj);
 };
 
 typedef struct _IPAService_updatBudget_args__isset {
@@ -283,6 +396,9 @@ class IPAServiceClient : virtual public IPAServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
+  int32_t reportQueueLength();
+  void send_reportQueueLength();
+  int32_t recv_reportQueueLength();
   void updatBudget(const double budget);
   void send_updatBudget(const double budget);
   void recv_updatBudget();
@@ -304,11 +420,13 @@ class IPAServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (IPAServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
+  void process_reportQueueLength(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updatBudget(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_submitQuery(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   IPAServiceProcessor(boost::shared_ptr<IPAServiceIf> iface) :
     iface_(iface) {
+    processMap_["reportQueueLength"] = &IPAServiceProcessor::process_reportQueueLength;
     processMap_["updatBudget"] = &IPAServiceProcessor::process_updatBudget;
     processMap_["submitQuery"] = &IPAServiceProcessor::process_submitQuery;
   }
@@ -339,6 +457,15 @@ class IPAServiceMultiface : virtual public IPAServiceIf {
     ifaces_.push_back(iface);
   }
  public:
+  int32_t reportQueueLength() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->reportQueueLength();
+    }
+    return ifaces_[i]->reportQueueLength();
+  }
+
   void updatBudget(const double budget) {
     size_t sz = ifaces_.size();
     size_t i = 0;

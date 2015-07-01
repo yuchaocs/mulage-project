@@ -100,7 +100,10 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		}
 		~SpeechRecognitionServiceHandler() {
 		}
-		
+
+		int32_t reportQueueLength() {
+			return this->qq.size();
+		}		
 		void updatBudget(const double budget) {
 			this->budget = budget;
     			cout << "service " << this->SERVICE_NAME << " at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << " update its budget to " << this->budget << endl;
