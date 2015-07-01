@@ -9,13 +9,32 @@ export CLASSPATH=bin:lib/ml/maxent.jar:lib/ml/minorthird.jar:lib/nlp/jwnl.jar:li
 export INDRI_INDEX=`pwd`/wiki_indri_index/
 export THREADS=8
 
-java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9191 141.212.107.226 8888 > start1.log 2>&1 &
-java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9192 141.212.107.226 8888 > start2.log 2>&1 &
-java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9193 141.212.107.226 8888 > start3.log 2>&1 &
-java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9194 141.212.107.226 8888 > start4.log 2>&1 &
+# $1 ----> service ip
+# $2 ----> service port
+# $3 ----> scheduler ip
+# $4 ----> scheduler port
+# $5 ----> instance number
+
+service_ip=$1
+service_port=$2
+scheduer_ip=$3
+scheduler_port=$4
+num_instance=$5
+
+i=0
+
+while [ $i -lt $num_instance ]
+do
+	java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+  info.ephyra.OpenEphyraService $service_ip $service_port $scheduer_ip $scheduler_port > start"$i".log 2>&1 &
+	i=`expr $i + 1`
+	service_port=`expr $service_port + 1`
+done
+#java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+#  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9192 141.212.107.226 8888 > start2.log 2>&1 &
+#java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+#  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9193 141.212.107.226 8888 > start3.log 2>&1 &
+#java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+#  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9194 141.212.107.226 8888 > start4.log 2>&1 &
 #java -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
 #  info.ephyra.OpenEphyraService

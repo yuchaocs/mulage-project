@@ -176,6 +176,11 @@ public class OpenEphyraService implements IPAService.Iface {
 	}
 
 	@Override
+	public int reportQueueLength() {
+		return this.queryQueue.size();
+	}
+
+	@Override
 	public void updatBudget(double budget) throws TException {
 		this.budget = budget;
 		LOG.info("service " + SERVICE_NAME + " at " + SERVICE_IP + ":"
