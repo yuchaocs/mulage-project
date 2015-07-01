@@ -15,8 +15,9 @@
 class SchedulerServiceIf {
  public:
   virtual ~SchedulerServiceIf() {}
-  virtual void registerBackend( ::RegReply& _return, const  ::RegMessage& message) = 0;
+  virtual void registerBackend(const  ::RegMessage& message) = 0;
   virtual void enqueueFinishedQuery(const  ::QuerySpec& query) = 0;
+  virtual void consultAddress( ::THostPort& _return, const std::string& serviceType) = 0;
 };
 
 class SchedulerServiceIfFactory {
@@ -46,10 +47,13 @@ class SchedulerServiceIfSingletonFactory : virtual public SchedulerServiceIfFact
 class SchedulerServiceNull : virtual public SchedulerServiceIf {
  public:
   virtual ~SchedulerServiceNull() {}
-  void registerBackend( ::RegReply& /* _return */, const  ::RegMessage& /* message */) {
+  void registerBackend(const  ::RegMessage& /* message */) {
     return;
   }
   void enqueueFinishedQuery(const  ::QuerySpec& /* query */) {
+    return;
+  }
+  void consultAddress( ::THostPort& /* _return */, const std::string& /* serviceType */) {
     return;
   }
 };
@@ -111,16 +115,12 @@ class SchedulerService_registerBackend_pargs {
   friend std::ostream& operator<<(std::ostream& out, const SchedulerService_registerBackend_pargs& obj);
 };
 
-typedef struct _SchedulerService_registerBackend_result__isset {
-  _SchedulerService_registerBackend_result__isset() : success(false) {}
-  bool success :1;
-} _SchedulerService_registerBackend_result__isset;
 
 class SchedulerService_registerBackend_result {
  public:
 
-  static const char* ascii_fingerprint; // = "EB167BD99886D5C8AA05729007438B16";
-  static const uint8_t binary_fingerprint[16]; // = {0xEB,0x16,0x7B,0xD9,0x98,0x86,0xD5,0xC8,0xAA,0x05,0x72,0x90,0x07,0x43,0x8B,0x16};
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
   SchedulerService_registerBackend_result(const SchedulerService_registerBackend_result&);
   SchedulerService_registerBackend_result& operator=(const SchedulerService_registerBackend_result&);
@@ -128,16 +128,9 @@ class SchedulerService_registerBackend_result {
   }
 
   virtual ~SchedulerService_registerBackend_result() throw();
-   ::RegReply success;
 
-  _SchedulerService_registerBackend_result__isset __isset;
-
-  void __set_success(const  ::RegReply& val);
-
-  bool operator == (const SchedulerService_registerBackend_result & rhs) const
+  bool operator == (const SchedulerService_registerBackend_result & /* rhs */) const
   {
-    if (!(success == rhs.success))
-      return false;
     return true;
   }
   bool operator != (const SchedulerService_registerBackend_result &rhs) const {
@@ -152,22 +145,15 @@ class SchedulerService_registerBackend_result {
   friend std::ostream& operator<<(std::ostream& out, const SchedulerService_registerBackend_result& obj);
 };
 
-typedef struct _SchedulerService_registerBackend_presult__isset {
-  _SchedulerService_registerBackend_presult__isset() : success(false) {}
-  bool success :1;
-} _SchedulerService_registerBackend_presult__isset;
 
 class SchedulerService_registerBackend_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "EB167BD99886D5C8AA05729007438B16";
-  static const uint8_t binary_fingerprint[16]; // = {0xEB,0x16,0x7B,0xD9,0x98,0x86,0xD5,0xC8,0xAA,0x05,0x72,0x90,0x07,0x43,0x8B,0x16};
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
 
   virtual ~SchedulerService_registerBackend_presult() throw();
-   ::RegReply* success;
-
-  _SchedulerService_registerBackend_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -276,6 +262,126 @@ class SchedulerService_enqueueFinishedQuery_presult {
   friend std::ostream& operator<<(std::ostream& out, const SchedulerService_enqueueFinishedQuery_presult& obj);
 };
 
+typedef struct _SchedulerService_consultAddress_args__isset {
+  _SchedulerService_consultAddress_args__isset() : serviceType(false) {}
+  bool serviceType :1;
+} _SchedulerService_consultAddress_args__isset;
+
+class SchedulerService_consultAddress_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+
+  SchedulerService_consultAddress_args(const SchedulerService_consultAddress_args&);
+  SchedulerService_consultAddress_args& operator=(const SchedulerService_consultAddress_args&);
+  SchedulerService_consultAddress_args() : serviceType() {
+  }
+
+  virtual ~SchedulerService_consultAddress_args() throw();
+  std::string serviceType;
+
+  _SchedulerService_consultAddress_args__isset __isset;
+
+  void __set_serviceType(const std::string& val);
+
+  bool operator == (const SchedulerService_consultAddress_args & rhs) const
+  {
+    if (!(serviceType == rhs.serviceType))
+      return false;
+    return true;
+  }
+  bool operator != (const SchedulerService_consultAddress_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SchedulerService_consultAddress_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_consultAddress_args& obj);
+};
+
+
+class SchedulerService_consultAddress_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+
+
+  virtual ~SchedulerService_consultAddress_pargs() throw();
+  const std::string* serviceType;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_consultAddress_pargs& obj);
+};
+
+typedef struct _SchedulerService_consultAddress_result__isset {
+  _SchedulerService_consultAddress_result__isset() : success(false) {}
+  bool success :1;
+} _SchedulerService_consultAddress_result__isset;
+
+class SchedulerService_consultAddress_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "A7EBA1EF34886CA23D8B187ED3C45C57";
+  static const uint8_t binary_fingerprint[16]; // = {0xA7,0xEB,0xA1,0xEF,0x34,0x88,0x6C,0xA2,0x3D,0x8B,0x18,0x7E,0xD3,0xC4,0x5C,0x57};
+
+  SchedulerService_consultAddress_result(const SchedulerService_consultAddress_result&);
+  SchedulerService_consultAddress_result& operator=(const SchedulerService_consultAddress_result&);
+  SchedulerService_consultAddress_result() {
+  }
+
+  virtual ~SchedulerService_consultAddress_result() throw();
+   ::THostPort success;
+
+  _SchedulerService_consultAddress_result__isset __isset;
+
+  void __set_success(const  ::THostPort& val);
+
+  bool operator == (const SchedulerService_consultAddress_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SchedulerService_consultAddress_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SchedulerService_consultAddress_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_consultAddress_result& obj);
+};
+
+typedef struct _SchedulerService_consultAddress_presult__isset {
+  _SchedulerService_consultAddress_presult__isset() : success(false) {}
+  bool success :1;
+} _SchedulerService_consultAddress_presult__isset;
+
+class SchedulerService_consultAddress_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "A7EBA1EF34886CA23D8B187ED3C45C57";
+  static const uint8_t binary_fingerprint[16]; // = {0xA7,0xEB,0xA1,0xEF,0x34,0x88,0x6C,0xA2,0x3D,0x8B,0x18,0x7E,0xD3,0xC4,0x5C,0x57};
+
+
+  virtual ~SchedulerService_consultAddress_presult() throw();
+   ::THostPort* success;
+
+  _SchedulerService_consultAddress_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_consultAddress_presult& obj);
+};
+
 class SchedulerServiceClient : virtual public SchedulerServiceIf {
  public:
   SchedulerServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -301,12 +407,15 @@ class SchedulerServiceClient : virtual public SchedulerServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void registerBackend( ::RegReply& _return, const  ::RegMessage& message);
+  void registerBackend(const  ::RegMessage& message);
   void send_registerBackend(const  ::RegMessage& message);
-  void recv_registerBackend( ::RegReply& _return);
+  void recv_registerBackend();
   void enqueueFinishedQuery(const  ::QuerySpec& query);
   void send_enqueueFinishedQuery(const  ::QuerySpec& query);
   void recv_enqueueFinishedQuery();
+  void consultAddress( ::THostPort& _return, const std::string& serviceType);
+  void send_consultAddress(const std::string& serviceType);
+  void recv_consultAddress( ::THostPort& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -324,11 +433,13 @@ class SchedulerServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   ProcessMap processMap_;
   void process_registerBackend(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_enqueueFinishedQuery(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_consultAddress(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   SchedulerServiceProcessor(boost::shared_ptr<SchedulerServiceIf> iface) :
     iface_(iface) {
     processMap_["registerBackend"] = &SchedulerServiceProcessor::process_registerBackend;
     processMap_["enqueueFinishedQuery"] = &SchedulerServiceProcessor::process_enqueueFinishedQuery;
+    processMap_["consultAddress"] = &SchedulerServiceProcessor::process_consultAddress;
   }
 
   virtual ~SchedulerServiceProcessor() {}
@@ -357,14 +468,13 @@ class SchedulerServiceMultiface : virtual public SchedulerServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  void registerBackend( ::RegReply& _return, const  ::RegMessage& message) {
+  void registerBackend(const  ::RegMessage& message) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerBackend(_return, message);
+      ifaces_[i]->registerBackend(message);
     }
-    ifaces_[i]->registerBackend(_return, message);
-    return;
+    ifaces_[i]->registerBackend(message);
   }
 
   void enqueueFinishedQuery(const  ::QuerySpec& query) {
@@ -374,6 +484,16 @@ class SchedulerServiceMultiface : virtual public SchedulerServiceIf {
       ifaces_[i]->enqueueFinishedQuery(query);
     }
     ifaces_[i]->enqueueFinishedQuery(query);
+  }
+
+  void consultAddress( ::THostPort& _return, const std::string& serviceType) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->consultAddress(_return, serviceType);
+    }
+    ifaces_[i]->consultAddress(_return, serviceType);
+    return;
   }
 
 };

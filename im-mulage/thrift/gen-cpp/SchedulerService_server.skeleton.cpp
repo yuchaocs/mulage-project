@@ -20,7 +20,7 @@ class SchedulerServiceHandler : virtual public SchedulerServiceIf {
     // Your initialization goes here
   }
 
-  void registerBackend( ::RegReply& _return, const  ::RegMessage& message) {
+  void registerBackend(const  ::RegMessage& message) {
     // Your implementation goes here
     printf("registerBackend\n");
   }
@@ -28,6 +28,11 @@ class SchedulerServiceHandler : virtual public SchedulerServiceIf {
   void enqueueFinishedQuery(const  ::QuerySpec& query) {
     // Your implementation goes here
     printf("enqueueFinishedQuery\n");
+  }
+
+  void consultAddress( ::THostPort& _return, const std::string& serviceType) {
+    // Your implementation goes here
+    printf("consultAddress\n");
   }
 
 };

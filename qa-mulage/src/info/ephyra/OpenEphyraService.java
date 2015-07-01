@@ -79,10 +79,10 @@ import java.io.LineNumberReader;
 public class OpenEphyraService implements IPAService.Iface {
 	
 	private static final String SERVICE_NAME = "qa";
-	private static final String SERVICE_IP = "clarity28.eecs.umich.edu";
-	private static final int SERVICE_PORT = 7788;
-	private static final String SCHEDULER_IP = "141.212.107.226";
-	private static final int SCHEDULER_PORT = 8888;
+	private static String SERVICE_IP;
+	private static int SERVICE_PORT;
+	private static String SCHEDULER_IP;
+	private static int SCHEDULER_PORT;
 	private static final Logger LOG = Logger.getLogger(OpenEphyraService.class);
 	private static List<THostPort> service_list;
 	private static String DOWNSTREAM_SERVICE_IP;
@@ -95,11 +95,17 @@ public class OpenEphyraService implements IPAService.Iface {
 			500, new QueryComparator<QuerySpec>());
 
 	private static SchedulerService.Client scheduler_client;
-	private static IPAService.Client service_client;
 	private static CSVWriter csvWriter = null;
 	private static final String FILE_HEADER = "qsize";
 	private static OpenEphyra qaInstance = null;
 	private static int total_num_question = 0;
+	
+	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port) {
+		this.SERVICE_PORT = new Integer(service_port);
+		this.SERVICE_IP = service_ip;
+		this.SCHEDULER_IP = scheduler_ip;
+		this.SCHEDULER_PORT = new Integer(scheduler_port);
+	}
 
 	private int getTotalLineNum(File file) {
         	String line = null;  
@@ -140,13 +146,12 @@ public class OpenEphyraService implements IPAService.Iface {
 		total_num_question = getTotalLineNum(new File(QUESTION_FILE_PATH));
 		qaInstance = new OpenEphyra();
 		try {
-            		csvWriter = new CSVWriter(new FileWriter("/home/hailong/mulage_project/qa-mulage/qa_qsize.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);
+            		csvWriter = new CSVWriter(new FileWriter("/home/hailong/mulage_project/qa-mulage/qa-" + SERVICE_PORT + ".csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);
             		csvWriter.writeNext(FILE_HEADER.split(","));
 			csvWriter.flush();
         	} catch (IOException e) {
         	    e.printStackTrace();
         	}
-		RegReply regReply = null;
 		try {
 			scheduler_client = TClient.creatSchedulerClient(SCHEDULER_IP,
 					SCHEDULER_PORT);
@@ -160,39 +165,14 @@ public class OpenEphyraService implements IPAService.Iface {
 					budget);
 			LOG.info("registering to command center runnig at " + SCHEDULER_IP
 					+ ":" + SCHEDULER_PORT);
-			regReply = scheduler_client.registerBackend(regMessage);
+			scheduler_client.registerBackend(regMessage);
 			LOG.info("service stage " + SERVICE_NAME
 					+ " successfully registered itself at " + SERVICE_IP + ":"
 					+ SERVICE_PORT);
-			service_list = regReply.getService_list();
-			if(service_list != null)
-				LOG.info("Received " + service_list.size()
-					+ " downstream service candidates");
-			else
-				LOG.info("Received 0 downstream service candidates");
 		} catch (TException ex) {
 			LOG.error("Error registering backend service " + ex.getMessage());
 		}
-		try {
-			if (service_list != null && service_list.size() != 0) {
-				Random rand = new Random();
-				THostPort hostPort = service_list.get(rand.nextInt(service_list
-						.size()));
-				DOWNSTREAM_SERVICE_IP = hostPort.getIp();
-				DOWNSTREAM_SERVICE_PORT = hostPort.getPort();
-				service_client = TClient.creatIPAClient(DOWNSTREAM_SERVICE_IP,
-						DOWNSTREAM_SERVICE_PORT);
-			} else {
-				LOG.info("no downstream service candidates are found by command center");
-				if (regReply.final_stage) {
-					LOG.info("reaching the final service stage of the workflow");
-				}
-			}
-		} catch (IOException ex) {
-			LOG.error("Error creating thrift scheduler client"
-					+ ex.getMessage());
-		}
-		new Thread(new processQueryRunnable(regReply.final_stage)).start();
+		new Thread(new processQueryRunnable()).start();
 	}
 
 	@Override
@@ -214,11 +194,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	}
 
 	private class processQueryRunnable implements Runnable {
-		private boolean final_stage;
 		private long counter = 0;
-		public processQueryRunnable(boolean final_stage) {
-			this.final_stage = final_stage;
-		}
 
 		@Override
 		public void run() {
@@ -276,31 +252,16 @@ public class OpenEphyraService implements IPAService.Iface {
 								- (process_end_time - process_start_time));
 					}
 					queryQueue.addAll(waiting_queries);
-					if (final_stage) {
-						LOG.info("enqueing query to command center at "
+					LOG.info("enqueing query to command center at "
 								+ SCHEDULER_IP + ":" + SCHEDULER_PORT);
-						try {
-							scheduler_client.enqueueFinishedQuery(query);
-						} catch (TException e) {
-							LOG.error("Error failed to submit query to command center at "
-									+ SCHEDULER_IP
-									+ ":"
-									+ SCHEDULER_PORT
-									+ e.getMessage());
-						}
-					} else {
-						LOG.info("submitting query in downstream service stage at "
-								+ DOWNSTREAM_SERVICE_IP
+					try {
+						scheduler_client.enqueueFinishedQuery(query);
+					} catch (TException e) {
+						LOG.error("Error failed to submit query to command center at "
+								+ SCHEDULER_IP
 								+ ":"
-								+ DOWNSTREAM_SERVICE_PORT);
-						try {
-							service_client.submitQuery(query);
-						} catch (TException e) {
-							LOG.error("Error failed to submit query to downstream service at "
-									+ DOWNSTREAM_SERVICE_IP
-									+ ":"
-									+ DOWNSTREAM_SERVICE_PORT + e.getMessage());
-						}
+								+ SCHEDULER_PORT
+								+ e.getMessage());
 					}
 				} catch (InterruptedException e) {
 					LOG.error("failed to pop the query from the queue"
@@ -322,7 +283,7 @@ public class OpenEphyraService implements IPAService.Iface {
                 // MsgPrinter.enableStatusMsgs(true);
                 // MsgPrinter.enableErrorMsgs(true);
 
-		OpenEphyraService qaService = new OpenEphyraService();
+		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3]);
 		IPAService.Processor<IPAService.Iface> processor = new IPAService.Processor<IPAService.Iface>(
 				qaService);
 		TServers.launchSingleThreadThriftServer(SERVICE_PORT, processor);

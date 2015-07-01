@@ -10,6 +10,12 @@ export INDRI_INDEX=`pwd`/wiki_indri_index/
 export THREADS=8
 
 java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService
+  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9191 141.212.107.226 8888 > start1.log 2>&1 &
+java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9192 141.212.107.226 8888 > start2.log 2>&1 &
+java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9193 141.212.107.226 8888 > start3.log 2>&1 &
+java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9194 141.212.107.226 8888 > start4.log 2>&1 &
 #java -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
 #  info.ephyra.OpenEphyraService

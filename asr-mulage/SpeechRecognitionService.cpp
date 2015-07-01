@@ -70,6 +70,7 @@ namespace std {
 	};
 }
 
+#define NEXT_STAGE "imm"
 // define the constant
 // #define THREAD_WORKS 16
 // FIXME this is only used for testing, command line option is required
@@ -174,8 +175,11 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				int length = waiting_queries.size();
 				for(int i=0;i<length;i++)
 					qq.push( *(waiting_queries.wait_and_pop()) );
-				
-				this->service_client->submitQuery(*spec);
+				THostPort hostport;
+				this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
+				TClient tClient;
+				IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
+				service_client->submitQuery(*spec);
 			}
 		}
 
@@ -191,26 +195,8 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			regMessage.endpoint = hostPort;
 			regMessage.budget = this->budget;
 			cout << "registering to command center runnig at " << this->SCHEDULER_IP << ":" << this->SCHEDULER_PORT << endl;	
-			RegReply regReply;
-			this->scheduler_client->registerBackend(regReply, regMessage);
+			this->scheduler_client->registerBackend(regMessage);
 			cout << "service stage " << this->SERVICE_NAME << " successfully registered itself at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << endl;
-			this->service_list = &regReply.service_list;
-			if (this->service_list != NULL)
-				cout << "Received " << this->service_list->size() << " downstream service candidates" << endl;
-			else
-				cout << "Received 0 downstream service candidates" << endl;
-			if (this->service_list != NULL && this->service_list->size() != 0) {
-				THostPort downstream_hostPort = randomAssignService(this->service_list);
-				this->DOWNSTREAM_SERVICE_IP = downstream_hostPort.ip;
-				this->DOWNSTREAM_SERVICE_PORT = downstream_hostPort.port;
-				this->service_client = tClient.creatIPAClient(this->DOWNSTREAM_SERVICE_IP,
-						this->DOWNSTREAM_SERVICE_PORT);
-			} else {
-				cout << "no downstream service candidates are found by command center"<< endl;
-				if (regReply.final_stage) {
-					cout << "reaching the final service stage of the workflow" << endl;
-				}
-			}
 		
 			this->num_completed = 0;	
 			//parse the possible inputs	
@@ -238,19 +224,18 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		int SCHEDULER_PORT;
 		string SERVICE_IP;
 		int SERVICE_PORT;
-		String DOWNSTREAM_SERVICE_IP;
-		int DOWNSTREAM_SERVICE_PORT;
-		IPAServiceClient *service_client;
+		// String DOWNSTREAM_SERVICE_IP;
+		// int DOWNSTREAM_SERVICE_PORT;
+		// IPAServiceClient *service_client;
 		SchedulerServiceClient *scheduler_client;
-		vector<THostPort> *service_list; 
-		THostPort randomAssignService(vector<THostPort> *service_list) {
+		// THostPort randomAssignService(vector<THostPort> *service_list) {
 			// initialize random seed
-			srand(time(NULL));
+		// 	srand(time(NULL));
 			// generate random number between 0 and size of the candidate list
-			int choice = rand() % service_list->size();
-			THostPort hostPort = service_list->at(choice);
-			return hostPort;
-		}
+		//	int choice = rand() % service_list->size();
+		//	THostPort hostPort = service_list->at(choice);
+		//	return hostPort;
+		// }
 		string execute_asr(string input) {
 			// TODO 1. transform the binary file into a local wav file
 			// 2. pass the wav file path to pocketsphinx system call

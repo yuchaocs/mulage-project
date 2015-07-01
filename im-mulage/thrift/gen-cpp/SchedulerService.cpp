@@ -111,20 +111,7 @@ uint32_t SchedulerService_registerBackend_result::read(::apache::thrift::protoco
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -139,11 +126,6 @@ uint32_t SchedulerService_registerBackend_result::write(::apache::thrift::protoc
 
   xfer += oprot->writeStructBegin("SchedulerService_registerBackend_result");
 
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -172,20 +154,7 @@ uint32_t SchedulerService_registerBackend_presult::read(::apache::thrift::protoc
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -349,10 +318,196 @@ uint32_t SchedulerService_enqueueFinishedQuery_presult::read(::apache::thrift::p
   return xfer;
 }
 
-void SchedulerServiceClient::registerBackend( ::RegReply& _return, const  ::RegMessage& message)
+
+SchedulerService_consultAddress_args::~SchedulerService_consultAddress_args() throw() {
+}
+
+
+uint32_t SchedulerService_consultAddress_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->serviceType);
+          this->__isset.serviceType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t SchedulerService_consultAddress_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("SchedulerService_consultAddress_args");
+
+  xfer += oprot->writeFieldBegin("serviceType", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->serviceType);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+SchedulerService_consultAddress_pargs::~SchedulerService_consultAddress_pargs() throw() {
+}
+
+
+uint32_t SchedulerService_consultAddress_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("SchedulerService_consultAddress_pargs");
+
+  xfer += oprot->writeFieldBegin("serviceType", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->serviceType)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+SchedulerService_consultAddress_result::~SchedulerService_consultAddress_result() throw() {
+}
+
+
+uint32_t SchedulerService_consultAddress_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t SchedulerService_consultAddress_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("SchedulerService_consultAddress_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+SchedulerService_consultAddress_presult::~SchedulerService_consultAddress_presult() throw() {
+}
+
+
+uint32_t SchedulerService_consultAddress_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+void SchedulerServiceClient::registerBackend(const  ::RegMessage& message)
 {
   send_registerBackend(message);
-  recv_registerBackend(_return);
+  recv_registerBackend();
 }
 
 void SchedulerServiceClient::send_registerBackend(const  ::RegMessage& message)
@@ -369,7 +524,7 @@ void SchedulerServiceClient::send_registerBackend(const  ::RegMessage& message)
   oprot_->getTransport()->flush();
 }
 
-void SchedulerServiceClient::recv_registerBackend( ::RegReply& _return)
+void SchedulerServiceClient::recv_registerBackend()
 {
 
   int32_t rseqid = 0;
@@ -395,16 +550,11 @@ void SchedulerServiceClient::recv_registerBackend( ::RegReply& _return)
     iprot_->getTransport()->readEnd();
   }
   SchedulerService_registerBackend_presult result;
-  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerBackend failed: unknown result");
+  return;
 }
 
 void SchedulerServiceClient::enqueueFinishedQuery(const  ::QuerySpec& query)
@@ -460,6 +610,64 @@ void SchedulerServiceClient::recv_enqueueFinishedQuery()
   return;
 }
 
+void SchedulerServiceClient::consultAddress( ::THostPort& _return, const std::string& serviceType)
+{
+  send_consultAddress(serviceType);
+  recv_consultAddress(_return);
+}
+
+void SchedulerServiceClient::send_consultAddress(const std::string& serviceType)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("consultAddress", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  SchedulerService_consultAddress_pargs args;
+  args.serviceType = &serviceType;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void SchedulerServiceClient::recv_consultAddress( ::THostPort& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("consultAddress") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  SchedulerService_consultAddress_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "consultAddress failed: unknown result");
+}
+
 bool SchedulerServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
@@ -502,8 +710,7 @@ void SchedulerServiceProcessor::process_registerBackend(int32_t seqid, ::apache:
 
   SchedulerService_registerBackend_result result;
   try {
-    iface_->registerBackend(result.success, args.message);
-    result.__isset.success = true;
+    iface_->registerBackend(args.message);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "SchedulerService.registerBackend");
@@ -583,6 +790,60 @@ void SchedulerServiceProcessor::process_enqueueFinishedQuery(int32_t seqid, ::ap
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "SchedulerService.enqueueFinishedQuery", bytes);
+  }
+}
+
+void SchedulerServiceProcessor::process_consultAddress(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("SchedulerService.consultAddress", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SchedulerService.consultAddress");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "SchedulerService.consultAddress");
+  }
+
+  SchedulerService_consultAddress_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "SchedulerService.consultAddress", bytes);
+  }
+
+  SchedulerService_consultAddress_result result;
+  try {
+    iface_->consultAddress(result.success, args.serviceType);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "SchedulerService.consultAddress");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("consultAddress", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "SchedulerService.consultAddress");
+  }
+
+  oprot->writeMessageBegin("consultAddress", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "SchedulerService.consultAddress", bytes);
   }
 }
 

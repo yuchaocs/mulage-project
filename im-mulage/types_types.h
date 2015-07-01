@@ -25,8 +25,6 @@ class QuerySpec;
 
 class RegMessage;
 
-class RegReply;
-
 typedef struct _THostPort__isset {
   _THostPort__isset() : ip(false), port(false) {}
   bool ip :1;
@@ -193,55 +191,6 @@ class RegMessage {
 };
 
 void swap(RegMessage &a, RegMessage &b);
-
-typedef struct _RegReply__isset {
-  _RegReply__isset() : service_list(false), final_stage(true) {}
-  bool service_list :1;
-  bool final_stage :1;
-} _RegReply__isset;
-
-class RegReply {
- public:
-
-  static const char* ascii_fingerprint; // = "07B7E0B5CBB16B38AD46D3C055CB12C2";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xB7,0xE0,0xB5,0xCB,0xB1,0x6B,0x38,0xAD,0x46,0xD3,0xC0,0x55,0xCB,0x12,0xC2};
-
-  RegReply(const RegReply&);
-  RegReply& operator=(const RegReply&);
-  RegReply() : final_stage(false) {
-  }
-
-  virtual ~RegReply() throw();
-  std::vector<THostPort>  service_list;
-  bool final_stage;
-
-  _RegReply__isset __isset;
-
-  void __set_service_list(const std::vector<THostPort> & val);
-
-  void __set_final_stage(const bool val);
-
-  bool operator == (const RegReply & rhs) const
-  {
-    if (!(service_list == rhs.service_list))
-      return false;
-    if (!(final_stage == rhs.final_stage))
-      return false;
-    return true;
-  }
-  bool operator != (const RegReply &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const RegReply & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const RegReply& obj);
-};
-
-void swap(RegReply &a, RegReply &b);
 
 
 
