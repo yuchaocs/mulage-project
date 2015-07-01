@@ -89,6 +89,15 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SERVICE_IP = "clarity28.eecs.umich.edu";
 			this->SERVICE_PORT = 9093;
 		}
+
+		SpeechRecognitionServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port) {
+			this->budget = 100;
+			this->SERVICE_NAME = "asr";
+			this->SCHEDULER_IP = scheduler_ip;
+			this->SCHEDULER_PORT = scheduler_port;
+			this->SERVICE_IP = service_ip;
+			this->SERVICE_PORT = service_port;
+		}
 		~SpeechRecognitionServiceHandler() {
 		}
 		
@@ -120,7 +129,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				int log_file = rand() % this->input_list.size();
 				
 				fstream log;
-				log.open("asr"+std::to_string(log_file)+".csv", std::ofstream::out);
+				log.open("asr"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out);
 				log << "qlen" << endl;
 				log.close();
 
@@ -149,7 +158,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				cout << "Num of completed queries: " << this->num_completed << endl; 
 				cout << "===================================================================" << endl;
 				
-				log.open("asr"+std::to_string(log_file)+".csv", std::ofstream::out | std::ofstream::app);
+				log.open("asr"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out | std::ofstream::app);
 				log << this->qq.size() << endl;
 				log.close();
 				
@@ -285,10 +294,20 @@ int main(int argc, char **argv){
 	// threadManager->threadFactory(threadFactory);
 	// threadManager->start();
 	
+	int service_port;
+	String service_ip;
+	int scheduler_port;
+	String scheduler_ip;
+	service_ip = argv[0];
+	service_port = atoi(argv[1]);
+	scheduler_ip = argv[2];
+	scheduler_port = atoi(argv[3]);
+	
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
-	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler();
+//	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler();
+	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port);
   	boost::shared_ptr<SpeechRecognitionServiceHandler> handler(speechRecognition);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));

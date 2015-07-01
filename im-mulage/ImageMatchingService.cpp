@@ -94,6 +94,21 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			cout << "building the image matching model..." << endl;
 			build_model();
 		}
+		
+		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port) {
+			this->matcher = new FlannBasedMatcher();
+			this->extractor = new SurfDescriptorExtractor();
+			this->detector = new SurfFeatureDetector();
+			this->budget = 100;
+			this->SERVICE_NAME = "imm";
+			this->SCHEDULER_IP = scheduler_ip;
+			this->SCHEDULER_PORT = scheduler_port;
+			this->SERVICE_IP = service_ip;
+			this->SERVICE_PORT = service_port;
+			cout << "building the image matching model..." << endl;
+			build_model();
+		}
+
 		~ImageMatchingServiceHandler() {
 			delete matcher;
 		}
@@ -125,10 +140,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				int64_t process_start_time;
 				int64_t process_end_time;
 				
-				int log_file = rand() % this->input_list.size();
-				
 				fstream log;
-				log.open("im"+std::to_string(log_file)+".csv", std::ofstream::out);
+				log.open("im"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out);
 				log << "qlen" << endl;
 				log.close();
 
@@ -156,7 +169,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				cout << "Num of completed queries: " << this->num_completed << endl; 
 				cout << "===================================================================" << endl;
 				
-				log.open("im"+std::to_string(log_file)+".csv", std::ofstream::out | std::ofstream::app);
+				log.open("im"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out | std::ofstream::app);
 				log << this->qq.size() << endl;
 				log.close();
 				
@@ -382,10 +395,19 @@ int main(int argc, char **argv){
 	// threadManager->threadFactory(threadFactory);
 	// threadManager->start();
 	
+	int service_port;
+	String service_ip;
+	int scheduler_port;
+	String scheduler_ip;
+	service_ip = argv[0];
+	service_port = atoi(argv[1]);
+	scheduler_ip = argv[2];
+	scheduler_port = atoi(argv[3]);
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
-	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler();
+//	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler();
+	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port);
   	boost::shared_ptr<ImageMatchingServiceHandler> handler(ImageMatchingService);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));
