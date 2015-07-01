@@ -105,6 +105,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			this->SCHEDULER_PORT = scheduler_port;
 			this->SERVICE_IP = service_ip;
 			this->SERVICE_PORT = service_port;
+			this->input_recycle = 100;
 			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 			cout << "building the image matching model..." << endl;
 			build_model();
@@ -161,7 +162,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				spec->timestamp.push_back(process_start_time);
 		
 			//call the query	
-				int rand_input = rand() % this->input_list.size();	
+				int rand_input = atoi(spec->name.c_str()) % this->input_recycle;
+				// int rand_input = rand() % this->input_list.size();	
 				match_img(this->input_list.at(rand_input));
 //				match_img(spec->input);
 				gettimeofday(&now, 0);
@@ -206,7 +208,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					qq.push( *(waiting_queries.wait_and_pop()) );
 				THostPort hostport;
                                 this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
-                                TClient tClient;
+				TClient tClient;
                                 IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
 				service_client->submitQuery(*spec);
 			}
@@ -244,6 +246,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		}
 
 	private:
+		int input_recycle;
 		vector<String> input_list;
 		QuerySpec newSpec;
 		int num_completed;
@@ -431,7 +434,7 @@ int main(int argc, char **argv){
 //	log.close();
 
 	// tServer.launchSingleThreadThriftServer(9093, processor);
-	tServer.launchSingleThreadThriftServer(9092, processor, thrift_server);
+	tServer.launchSingleThreadThriftServer(service_port, processor, thrift_server);
 	ImageMatchingService->initialize();
 	// server.serve();
 	cout << "Done..." << endl;

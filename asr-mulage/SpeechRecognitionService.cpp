@@ -97,6 +97,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SCHEDULER_PORT = scheduler_port;
 			this->SERVICE_IP = service_ip;
 			this->SERVICE_PORT = service_port;
+			this->input_recycle = 100;
 			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 		}
 		~SpeechRecognitionServiceHandler() {
@@ -149,7 +150,8 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				spec->timestamp.push_back(process_start_time);
 				
 			//call the query	
-				int rand_input = rand() % this->input_list.size();	
+				int rand_input = atoi(spec->name.c_str()) % this->input_recycle;
+				// int rand_input = rand() % this->input_list.size();	
 				execute_asr(this->input_list.at(rand_input));
 //				execute_asr(spec->input);
 				
@@ -227,6 +229,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		}
 
 	private:
+		int input_recycle;
 		vector<String> input_list;
 		QuerySpec newSpec;
 		int num_completed;
@@ -326,7 +329,7 @@ int main(int argc, char **argv){
 	
 	
 	// tServer.launchSingleThreadThriftServer(9092, processor);
-	tServer.launchSingleThreadThriftServer(9093, processor, thrift_server);
+	tServer.launchSingleThreadThriftServer(service_port, processor, thrift_server);
 	speechRecognition->initialize();
 	// server.serve();
 	cout << "Done..." << endl;

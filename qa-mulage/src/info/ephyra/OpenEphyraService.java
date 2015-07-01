@@ -100,6 +100,8 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static OpenEphyra qaInstance = null;
 	private static int total_num_question = 0;
 	
+	private static final int INPUT_RECYCLE = 100;
+	
 	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port) {
 		this.SERVICE_PORT = new Integer(service_port);
 		this.SERVICE_IP = service_ip;
@@ -213,8 +215,9 @@ public class OpenEphyraService implements IPAService.Iface {
 					// timestamp the query when it is enqueued (end)
 					// this is also the timestamp for the start of serving
 					// (start)
-					Random randGen = new Random();
-					int randLine = randGen.nextInt(total_num_question);
+					// Random randGen = new Random();
+					// int randLine = randGen.nextInt(total_num_question);
+					int randLine = new Integer(query.getName()).intValue() % INPUT_RECYCLE;
 					String question = getQuestion(new File(QUESTION_FILE_PATH), randLine);
 					
 					long queuing_start_time = query.getTimestamp().get(
