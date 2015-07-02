@@ -20,7 +20,7 @@ i=0
 
 while [ $i -lt $num_instance ]
 do
-	./imservice $service_ip $service_port $scheduler_ip $scheduler_port > start"$i".log 2>&1 &
+	taskset -c 9 ./imservice $service_ip $service_port $scheduler_ip $scheduler_port > start"$i".log 2>&1 &
 	i=`expr $i + 1`
 	service_port=`expr $service_port + 1`
 done

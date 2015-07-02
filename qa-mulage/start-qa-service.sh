@@ -14,21 +14,25 @@ export THREADS=8
 # $3 ----> scheduler ip
 # $4 ----> scheduler port
 # $5 ----> instance number
+# $6 ----> queuing policy
 
 service_ip=$1
 service_port=$2
 scheduer_ip=$3
 scheduler_port=$4
 num_instance=$5
+queuing_policy=$6
 
+pinned_core=10
 i=0
 
 while [ $i -lt $num_instance ]
 do
-	java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService $service_ip $service_port $scheduer_ip $scheduler_port > start"$i".log 2>&1 &
+	taskset -c $pinned_core java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
+  info.ephyra.OpenEphyraService $service_ip $service_port $scheduer_ip $scheduler_port $queuing_policy > start"$i".log 2>&1 &
 	i=`expr $i + 1`
 	service_port=`expr $service_port + 1`
+	pinned_core=`expr $pinned_core + 1`
 done
 #java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
 #  info.ephyra.OpenEphyraService clarity28.eecs.umich.edu 9192 141.212.107.226 8888 > start2.log 2>&1 &

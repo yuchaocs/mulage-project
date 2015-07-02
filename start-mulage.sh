@@ -12,9 +12,9 @@ qa_service_port=9090
 
 asr_num_client=1
 imm_num_client=1
-qa_num_client=4
+qa_num_client=2
 
-
+queuing_policy="fifo"
 
 scheduler_ip=141.212.107.226
 scheduler_port=8888
@@ -22,7 +22,7 @@ scheduler_port=8888
 echo "=========================================="
 cd $qadir
 echo "starting the question answer service..."
-./start-qa-service.sh $service_ip $qa_service_port $scheduler_ip $scheduler_port $qa_num_client
+./start-qa-service.sh $service_ip $qa_service_port $scheduler_ip $scheduler_port $qa_num_client $queuing_policy
 cd - > /dev/null
 sleep 5
 

@@ -69,6 +69,7 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * <code>OpenEphyra</code> is an open framework for question answering (QA).
@@ -90,10 +91,9 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static final String QUESTION_FILE_PATH = "/home/hailong/mulage_project/qa-mulage/input/questions.txt";
 
 	private double budget = 100;
-
-	private BlockingQueue<QuerySpec> queryQueue = new PriorityBlockingQueue<QuerySpec>(
-			500, new QueryComparator<QuerySpec>());
-
+	private static final String FIFO_POLICY = "fifo";
+	private static final String PRIORITY_POLICY = "priority";
+	private BlockingQueue<QuerySpec> queryQueue;
 	private static SchedulerService.Client scheduler_client;
 	private static CSVWriter csvWriter = null;
 	private static final String FILE_HEADER = "qsize";
@@ -102,11 +102,16 @@ public class OpenEphyraService implements IPAService.Iface {
 	
 	private static final int INPUT_RECYCLE = 100;
 	
-	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port) {
+	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port, String queue_policy) {
 		this.SERVICE_PORT = new Integer(service_port);
 		this.SERVICE_IP = service_ip;
 		this.SCHEDULER_IP = scheduler_ip;
 		this.SCHEDULER_PORT = new Integer(scheduler_port);
+		if (queue_policy.equalsIgnoreCase(PRIORITY_POLICY)) {
+			this.queryQueue = new PriorityBlockingQueue<QuerySpec>(500, new QueryComparator<QuerySpec>());
+		} else if (queue_policy.equalsIgnoreCase(FIFO_POLICY)) {
+			this.queryQueue = new LinkedBlockingQueue<QuerySpec>();
+		}
 	}
 
 	private int getTotalLineNum(File file) {
@@ -291,7 +296,7 @@ public class OpenEphyraService implements IPAService.Iface {
                 // MsgPrinter.enableStatusMsgs(true);
                 // MsgPrinter.enableErrorMsgs(true);
 
-		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3]);
+		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3], args[4]);
 		IPAService.Processor<IPAService.Iface> processor = new IPAService.Processor<IPAService.Iface>(
 				qaService);
 		TServers.launchSingleThreadThriftServer(SERVICE_PORT, processor);
