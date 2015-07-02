@@ -70,6 +70,27 @@ namespace std {
 	};
 }
 
+class FIFO_QuerySpec {
+	public:
+		FIFO_QuerySpec(const QuerySpec& spec){
+			this->qs = spec;
+			struct timeval now;
+			gettimeofday(&now, 0);
+			this->ts=now.tv_sec*1E6+now.tv_usec;
+		}
+		
+		QuerySpec qs;
+		int64_t ts;
+};
+
+namespace std {
+	template<> struct less<FIFO_QuerySpec> {
+		bool operator()(const FIFO_QuerySpec& k1, const FIFO_QuerySpec& k2) const {
+			return k1.ts < k2.ts;
+		}
+	};
+}
+
 #define NEXT_STAGE "qa"
 // define the constant
 // #define THREAD_WORKS 16
@@ -95,7 +116,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			build_model();
 		}
 		
-		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port) {
+		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type) {
 			this->matcher = new FlannBasedMatcher();
 			this->extractor = new SurfDescriptorExtractor();
 			this->detector = new SurfFeatureDetector();
@@ -106,6 +127,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			this->SERVICE_IP = service_ip;
 			this->SERVICE_PORT = service_port;
 			this->input_recycle = 100;
+			this->QUEUE_TYPE=queue_type;
 			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 			cout << "building the image matching model..." << endl;
 			build_model();
@@ -131,11 +153,19 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			gettimeofday(&now, 0);
 			int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
 
-			newSpec = query;
-//			QuerySpec newSpec(query);
-			newSpec.timestamp.push_back(current);
-			// 2. put the query to a thread saft queue structure
-			qq.push(newSpec);
+			if(this->QUEUE_TYPE == "priority") {
+				newSpec = query;
+//				QuerySpec newSpec(query);
+				newSpec.timestamp.push_back(current);
+				// 2. put the query to a thread saft queue structure
+				qq.push(newSpec);
+			}
+			else if(this->QUEUE_TYPE == "fifo") {
+				FIFO_QuerySpec newFIFOSpec(query);
+				newFIFOSpec.qs.timestamp.push_back(current);
+				// 2. put the query to a thread saft queue structure
+				fifo_qq.push(newFIFOSpec);
+			}
 			// 3. a private class generates a helper thread to process the query from the queue
   		}
 
@@ -153,64 +183,105 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 
 			while(1) {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
-				auto spec = this->qq.wait_and_pop();
-				queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1);
-				cout << "===================================================================" << endl;
-				cout << "IM queue length is " << this->qq.size() << endl;	
-				gettimeofday(&now, 0);
-				process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-				spec->timestamp.push_back(process_start_time);
+				if(this->QUEUE_TYPE == "priority") {
+					auto spec = this->qq.wait_and_pop();
+					queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1);
+					cout << "=============================================================" << endl;
+					cout << "IM queue length is " << this->qq.size() << endl;	
+					gettimeofday(&now, 0);
+					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					spec->timestamp.push_back(process_start_time);
 		
 			//call the query	
-				int rand_input = atoi(spec->name.c_str()) % this->input_recycle;
+					int rand_input = atoi(spec->name.c_str()) % this->input_recycle;
 				// int rand_input = rand() % this->input_list.size();	
-				match_img(this->input_list.at(rand_input));
-//				match_img(spec->input);
-				gettimeofday(&now, 0);
-				process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					match_img(this->input_list.at(rand_input));
+//					match_img(spec->input);
+					gettimeofday(&now, 0);
+					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 				
-				this->num_completed ++;	
+					this->num_completed ++;	
 				
-				cout << "Queuing time is " << process_start_time - queuing_start_time << " ms, " 
-					<< "Serving time is " << process_end_time - process_start_time << " ms."<< endl;	
-				cout << "Num of completed queries: " << this->num_completed << endl; 
-				cout << "===================================================================" << endl;
+					cout << "Queuing time is " << process_start_time-queuing_start_time << " ms, " 
+						<<"Serving time is "<<process_end_time-process_start_time << " ms."<< endl;	
+					cout << "Num of completed queries: " << this->num_completed << endl; 
+					cout << "=============================================================" << endl;
 				
-				log.open("im"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out | std::ofstream::app);
-				log << this->qq.size() << endl;
-				log.close();
+					log.open("im"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out | std::ofstream::app);
+					log << this->qq.size() << endl;
+					log.close();
 				
-//				fstream log;
-//				log.open("im.csv", std::ofstream::out | std::ofstream::app);
-//				log << this->qq.size() << endl;
-//				log.close();
-				
-				spec->timestamp.push_back(process_end_time);
-				spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
+					spec->timestamp.push_back(process_end_time);
+					spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
 
-				ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
-/*			
-				for(int i=0;i<length;i++) {
-					auto waiting_spec = this->qq.wait_and_pop();
-					waiting_spec->__set_budget(spec->budget - (process_end_time - process_start_time) );
-					waiting_queries.push(*waiting_spec);
-				}
-*/				
-				auto waiting_spec = this->qq.try_pop();
-				while(waiting_spec != nullptr) {
-					waiting_spec->__set_budget(spec->budget - (process_end_time - process_start_time) );
-					waiting_queries.push(*waiting_spec);
-					waiting_spec = this->qq.try_pop();
-				}
+					ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
 				
-				int length = waiting_queries.size();	
-				for(int i=0;i<length;i++)
-					qq.push( *(waiting_queries.wait_and_pop()) );
-				THostPort hostport;
-                                this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
-				TClient tClient;
-                                IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
-				service_client->submitQuery(*spec);
+					auto waiting_spec = this->qq.try_pop();
+					while(waiting_spec != nullptr) {
+						waiting_spec->__set_budget(spec->budget - (process_end_time - process_start_time) );
+						waiting_queries.push(*waiting_spec);
+						waiting_spec = this->qq.try_pop();
+					}
+				
+					int length = waiting_queries.size();	
+					for(int i=0;i<length;i++)
+						qq.push( *(waiting_queries.wait_and_pop()) );
+					
+					THostPort hostport;
+                    this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
+					TClient tClient;
+                    IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
+					service_client->submitQuery(*spec);
+				} 
+				else if (this->QUEUE_TYPE == "fifo") {
+					auto spec = this->fifo_qq.wait_and_pop();
+					queuing_start_time = spec->qs.timestamp.at(spec->qs.timestamp.size()-1);
+					cout << "=============================================================" << endl;
+					cout << "IM queue length is " << this->fifo_qq.size() << endl;	
+					gettimeofday(&now, 0);
+					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					spec->qs.timestamp.push_back(process_start_time);
+		
+			//call the query	
+					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
+					match_img(this->input_list.at(rand_input));
+					gettimeofday(&now, 0);
+					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+				
+					this->num_completed ++;	
+				
+					cout << "Queuing time is " << process_start_time-queuing_start_time << " ms, " 
+						<<"Serving time is "<<process_end_time-process_start_time << " ms."<< endl;	
+					cout << "Num of completed queries: " << this->num_completed << endl; 
+					cout << "=============================================================" << endl;
+				
+					log.open("im"+std::to_string(this->SERVICE_PORT)+".csv", std::ofstream::out | std::ofstream::app);
+					log << this->fifo_qq.size() << endl;
+					log.close();
+				
+					spec->qs.timestamp.push_back(process_end_time);
+					spec->qs.__set_budget( spec->qs.budget - (process_end_time - process_start_time) );
+
+					ThreadSafePriorityQueue<FIFO_QuerySpec> waiting_queries;		//query queue
+				
+					auto waiting_spec = this->fifo_qq.try_pop();
+					while(waiting_spec != nullptr) {
+						waiting_spec->qs.__set_budget(spec->qs.budget - (process_end_time - process_start_time) );
+						waiting_queries.push(*waiting_spec);
+						waiting_spec = this->fifo_qq.try_pop();
+					}
+				
+					int length = waiting_queries.size();	
+					for(int i=0;i<length;i++)
+						fifo_qq.push( *(waiting_queries.wait_and_pop()) );
+					
+					THostPort hostport;
+                    this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
+					TClient tClient;
+                    IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
+					service_client->submitQuery(spec->qs);
+				}
+
 			}
 		}
 
@@ -251,9 +322,11 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		QuerySpec newSpec;
 		int num_completed;
 		ThreadSafePriorityQueue<QuerySpec> qq;		//query queue
+		ThreadSafePriorityQueue<FIFO_QuerySpec> fifo_qq;		//query queue
 		struct timeval tp;
 		struct timeval tv1, tv2;
 		double budget;
+		string QUEUE_TYPE;
 		string SERVICE_NAME;
 		string SCHEDULER_IP;
 		int SCHEDULER_PORT;
@@ -407,15 +480,17 @@ int main(int argc, char **argv){
 	String service_ip;
 	int scheduler_port;
 	String scheduler_ip;
+	String queue_type;
 	service_ip = argv[1];
 	service_port = atoi(argv[2]);
 	scheduler_ip = argv[3];
 	scheduler_port = atoi(argv[4]);
+	queue_type = argv[5];
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 //	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler();
-	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port);
+	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type);
   	boost::shared_ptr<ImageMatchingServiceHandler> handler(ImageMatchingService);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));
