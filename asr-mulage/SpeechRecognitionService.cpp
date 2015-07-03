@@ -111,7 +111,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SERVICE_PORT = 9093;
 		}
 
-		SpeechRecognitionServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type) {
+		SpeechRecognitionServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type, int core) {
 			this->budget = 100;
 			this->SERVICE_NAME = "asr";
 			this->SCHEDULER_IP = scheduler_ip;
@@ -119,6 +119,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SERVICE_IP = service_ip;
 			this->SERVICE_PORT = service_port;
 			this->QUEUE_TYPE = queue_type;
+			this->CORE = core;
 			this->input_recycle = 100;
 			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 		}
@@ -126,10 +127,18 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		}
 
 		int32_t reportQueueLength() {
-			return this->qq.size();
+			if(this->QUEUE_TYPE == "priority") {
+				return this->qq.size();
+			}
+			else if(this->QUEUE_TYPE == "fifo") {
+				return this->fifo_qq.size();
+			}
 		}		
 		void updatBudget(const double budget) {
 			this->budget = budget;
+			char command[50];
+			sprintf(command, "sudo cpufreq-set -c %d -f %d", this->CORE, (int)(budget*1000000));
+			int ret = std::system(command);
     			cout << "service " << this->SERVICE_NAME << " at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << " update its budget to " << this->budget << endl;
   		}
 
@@ -318,6 +327,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		int SCHEDULER_PORT;
 		string SERVICE_IP;
 		int SERVICE_PORT;
+		int CORE;
 		string QUEUE_TYPE;
 		// String DOWNSTREAM_SERVICE_IP;
 		// int DOWNSTREAM_SERVICE_PORT;
@@ -385,17 +395,19 @@ int main(int argc, char **argv){
 	int scheduler_port;
 	String scheduler_ip;
 	String queue_type;
+	int core;
 	service_ip = argv[1];
 	service_port = atoi(argv[2]);
 	scheduler_ip = argv[3];
 	scheduler_port = atoi(argv[4]);
 	queue_type = argv[5];
-	
+	core = atoi(argv[6]);
+
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 //	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler();
-	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type);
+	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type, core);
   	boost::shared_ptr<SpeechRecognitionServiceHandler> handler(speechRecognition);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));

@@ -116,7 +116,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			build_model();
 		}
 		
-		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type) {
+		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type, int core) {
 			this->matcher = new FlannBasedMatcher();
 			this->extractor = new SurfDescriptorExtractor();
 			this->detector = new SurfFeatureDetector();
@@ -128,6 +128,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			this->SERVICE_PORT = service_port;
 			this->input_recycle = 100;
 			this->QUEUE_TYPE=queue_type;
+			this->CORE=core;
 			cout << "service: "<< this->SERVICE_IP <<":"<<this->SERVICE_PORT << ", scheduler: "<< this->SCHEDULER_IP <<":"<<this->SCHEDULER_PORT<< endl;
 			cout << "building the image matching model..." << endl;
 			build_model();
@@ -138,11 +139,19 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		}
 
 		int32_t reportQueueLength() {
-                        return this->qq.size();
-                }
+			if(this->QUEUE_TYPE == "priority") {
+				return this->qq.size();
+			}
+			else if(this->QUEUE_TYPE == "fifo") {
+				return this->fifo_qq.size();
+			}
+        }
 		
 		void updatBudget(const double budget) {
 			this->budget = budget;
+			char command[50];
+			sprintf(command, "sudo cpufreq-set -c %d -f %d", this->CORE, (int)(budget*1000000));
+			int ret = std::system(command);
     			cout << "service " << this->SERVICE_NAME << " at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << " update its budget to " << this->budget << endl;
   		}
 
@@ -310,7 +319,6 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			// 2. launch the helper thread
 			boost::thread helper(boost::bind(&ImageMatchingServiceHandler::launchQuery, this));
 			
-//			int ret = std::system("cpufreq-set -c 0 -f 1500000");
 			
 			ThreadPool<void> tp(2);
 			boost::shared_future<void> f = tp.enqueue(boost::bind(&ImageMatchingServiceHandler::launchQuery, this), 1000);
@@ -332,6 +340,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		int SCHEDULER_PORT;
 		string SERVICE_IP;
 		int SERVICE_PORT;
+		int CORE;
 		FeatureDetector *detector;
 		DescriptorMatcher *matcher;
 		DescriptorExtractor *extractor;
@@ -481,16 +490,18 @@ int main(int argc, char **argv){
 	int scheduler_port;
 	String scheduler_ip;
 	String queue_type;
+	int core;
 	service_ip = argv[1];
 	service_port = atoi(argv[2]);
 	scheduler_ip = argv[3];
 	scheduler_port = atoi(argv[4]);
 	queue_type = argv[5];
+	core = atoi(argv[6]);
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 //	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler();
-	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type);
+	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type, core);
   	boost::shared_ptr<ImageMatchingServiceHandler> handler(ImageMatchingService);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));
