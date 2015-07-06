@@ -15,6 +15,8 @@ export THREADS=8
 # $4 ----> scheduler port
 # $5 ----> instance number
 # $6 ----> queuing policy
+# $7 ----> pinned core
+# $8 ----> running frequency
 
 service_ip=$1
 service_port=$2
@@ -24,12 +26,13 @@ num_instance=$5
 queuing_policy=$6
 
 pinned_core=11
+running_frequency=$7
 i=0
 
 while [ $i -lt $num_instance ]
 do
 	taskset -c $pinned_core java -XX:+UseConcMarkSweepGC -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m \
-  info.ephyra.OpenEphyraService $service_ip $service_port $scheduer_ip $scheduler_port $queuing_policy $pinned_core > start"$i".log 2>&1 &
+  info.ephyra.OpenEphyraService $service_ip $service_port $scheduer_ip $scheduler_port $queuing_policy $pinned_core $running_frequency > start"$i".log 2>&1 &
 	i=`expr $i + 1`
 	service_port=`expr $service_port + 1`
 	pinned_core=`expr $pinned_core + 1`

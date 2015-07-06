@@ -93,7 +93,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static int DOWNSTREAM_SERVICE_PORT;
 	private static final String QUESTION_FILE_PATH = "/home/hailong/mulage_project/qa-mulage/input/questions.txt";
 
-	private static double budget = 1.2;
+	private static double budget;
 	private static int core_id;
 	private static final String FIFO_POLICY = "fifo";
 	private static final String PRIORITY_POLICY = "priority";
@@ -106,12 +106,13 @@ public class OpenEphyraService implements IPAService.Iface {
 	
 	private static final int INPUT_RECYCLE = 100;
 	
-	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port, String queue_policy, String core_id) {
+	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port, String queue_policy, String core_id, String budget) {
 		this.SERVICE_PORT = new Integer(service_port);
 		this.SERVICE_IP = service_ip;
 		this.SCHEDULER_IP = scheduler_ip;
 		this.SCHEDULER_PORT = new Integer(scheduler_port);
 		this.core_id = new Integer(core_id);
+		this.budget = new Double(budget);
 		if (queue_policy.equalsIgnoreCase(PRIORITY_POLICY)) {
 			this.queryQueue = new PriorityBlockingQueue<QuerySpec>(500, new QueryComparator<QuerySpec>());
 		} else if (queue_policy.equalsIgnoreCase(FIFO_POLICY)) {
@@ -323,7 +324,7 @@ public class OpenEphyraService implements IPAService.Iface {
                 // MsgPrinter.enableStatusMsgs(true);
                 // MsgPrinter.enableErrorMsgs(true);
 
-		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3], args[4], args[5]);
+		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 		IPAService.Processor<IPAService.Iface> processor = new IPAService.Processor<IPAService.Iface>(
 				qaService);
 		TServers.launchSingleThreadThriftServer(SERVICE_PORT, processor);
