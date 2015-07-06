@@ -23,7 +23,7 @@ scheduler_port=$4
 num_instance=$5
 queuing_policy=$6
 
-pinned_core=10
+pinned_core=11
 i=0
 
 while [ $i -lt $num_instance ]

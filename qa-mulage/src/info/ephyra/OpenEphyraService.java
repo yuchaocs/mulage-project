@@ -69,6 +69,8 @@ import com.opencsv.CSVWriter;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -91,7 +93,8 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static int DOWNSTREAM_SERVICE_PORT;
 	private static final String QUESTION_FILE_PATH = "/home/hailong/mulage_project/qa-mulage/input/questions.txt";
 
-	private double budget = 100;
+	private static double budget = 1.2;
+	private static int core_id;
 	private static final String FIFO_POLICY = "fifo";
 	private static final String PRIORITY_POLICY = "priority";
 	private BlockingQueue<QuerySpec> queryQueue;
@@ -103,11 +106,12 @@ public class OpenEphyraService implements IPAService.Iface {
 	
 	private static final int INPUT_RECYCLE = 100;
 	
-	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port, String queue_policy) {
+	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port, String queue_policy, String core_id) {
 		this.SERVICE_PORT = new Integer(service_port);
 		this.SERVICE_IP = service_ip;
 		this.SCHEDULER_IP = scheduler_ip;
 		this.SCHEDULER_PORT = new Integer(scheduler_port);
+		this.core_id = new Integer(core_id);
 		if (queue_policy.equalsIgnoreCase(PRIORITY_POLICY)) {
 			this.queryQueue = new PriorityBlockingQueue<QuerySpec>(500, new QueryComparator<QuerySpec>());
 		} else if (queue_policy.equalsIgnoreCase(FIFO_POLICY)) {
@@ -191,8 +195,26 @@ public class OpenEphyraService implements IPAService.Iface {
 	@Override
 	public void updatBudget(double budget) throws TException {
 		this.budget = budget;
-		LOG.info("service " + SERVICE_NAME + " at " + SERVICE_IP + ":"
-				+ SERVICE_PORT + " update its budget to " + budget);
+		String command = "sudo cpufreq-set -c " + this.core_id + " -f " + (budget * 1000000);
+		String output = null;
+		try {
+			Process p = Runtime.getRuntime().exec(command);
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            		BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            		// read the output from the command
+            		while ((output = stdInput.readLine()) != null) {
+                		LOG.info("the output of cpufreq command is " + output);
+            		}
+             
+            		// read any errors from the attempted command
+            		while ((output = stdError.readLine()) != null) {
+                		LOG.error("failed to execute cpufreq: " + output);
+            		}
+			LOG.info("service " + SERVICE_NAME + " at " + SERVICE_IP + ":"
+					+ SERVICE_PORT + " update its budget to " + budget);
+			} catch (IOException e) {
+				LOG.error("failed to update the frequency budget " + e.getMessage());
+			}
 	}
 
 	@Override
@@ -301,11 +323,11 @@ public class OpenEphyraService implements IPAService.Iface {
                 // MsgPrinter.enableStatusMsgs(true);
                 // MsgPrinter.enableErrorMsgs(true);
 
-		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3], args[4]);
+		OpenEphyraService qaService = new OpenEphyraService(args[0], args[1], args[2], args[3], args[4], args[5]);
 		IPAService.Processor<IPAService.Iface> processor = new IPAService.Processor<IPAService.Iface>(
 				qaService);
 		TServers.launchSingleThreadThriftServer(SERVICE_PORT, processor);
-		LOG.info("starting " + SERVICE_NAME + " service at " + SERVICE_IP + ":" + SERVICE_PORT);
+		LOG.info("starting " + SERVICE_NAME + " service at " + SERVICE_IP + ":" + SERVICE_PORT+ " running on core " + core_id + " with frequency " + budget + "GHz");
 		qaService.initialize();
 		// MsgPrinter.printStatusMsg("QA service started at " + SERVICE_IP + ":" + SERVICE_PORT);
 		// set log file and enable logging

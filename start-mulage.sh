@@ -6,13 +6,13 @@ qadir=qa-mulage
 
 service_ip=clarity28.eecs.umich.edu
 
-asr_service_port=9070
-imm_service_port=9080
-qa_service_port=9090
+asr_service_port=9074
+imm_service_port=9084
+qa_service_port=9094
 
-asr_num_client=1
-imm_num_client=1
-qa_num_client=2
+asr_num_client=5
+imm_num_client=5
+qa_num_client=5
 
 queuing_policy="fifo"
 
