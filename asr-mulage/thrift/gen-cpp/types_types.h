@@ -21,6 +21,8 @@
 
 class THostPort;
 
+class LatencySpec;
+
 class QuerySpec;
 
 class RegMessage;
@@ -74,6 +76,67 @@ class THostPort {
 
 void swap(THostPort &a, THostPort &b);
 
+typedef struct _LatencySpec__isset {
+  _LatencySpec__isset() : instance_id(false), queuing_start_time(false), serving_start_time(false), serving_end_time(false) {}
+  bool instance_id :1;
+  bool queuing_start_time :1;
+  bool serving_start_time :1;
+  bool serving_end_time :1;
+} _LatencySpec__isset;
+
+class LatencySpec {
+ public:
+
+  static const char* ascii_fingerprint; // = "01233FF45FD1A48AF6DDBF39A5D0547E";
+  static const uint8_t binary_fingerprint[16]; // = {0x01,0x23,0x3F,0xF4,0x5F,0xD1,0xA4,0x8A,0xF6,0xDD,0xBF,0x39,0xA5,0xD0,0x54,0x7E};
+
+  LatencySpec(const LatencySpec&);
+  LatencySpec& operator=(const LatencySpec&);
+  LatencySpec() : instance_id(), queuing_start_time(0), serving_start_time(0), serving_end_time(0) {
+  }
+
+  virtual ~LatencySpec() throw();
+  std::string instance_id;
+  int64_t queuing_start_time;
+  int64_t serving_start_time;
+  int64_t serving_end_time;
+
+  _LatencySpec__isset __isset;
+
+  void __set_instance_id(const std::string& val);
+
+  void __set_queuing_start_time(const int64_t val);
+
+  void __set_serving_start_time(const int64_t val);
+
+  void __set_serving_end_time(const int64_t val);
+
+  bool operator == (const LatencySpec & rhs) const
+  {
+    if (!(instance_id == rhs.instance_id))
+      return false;
+    if (!(queuing_start_time == rhs.queuing_start_time))
+      return false;
+    if (!(serving_start_time == rhs.serving_start_time))
+      return false;
+    if (!(serving_end_time == rhs.serving_end_time))
+      return false;
+    return true;
+  }
+  bool operator != (const LatencySpec &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LatencySpec & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const LatencySpec& obj);
+};
+
+void swap(LatencySpec &a, LatencySpec &b);
+
 typedef struct _QuerySpec__isset {
   _QuerySpec__isset() : name(false), input(false), timestamp(false), budget(false) {}
   bool name :1;
@@ -85,8 +148,8 @@ typedef struct _QuerySpec__isset {
 class QuerySpec {
  public:
 
-  static const char* ascii_fingerprint; // = "7F2C64C93BB20002149DCE29E7E29674";
-  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x2C,0x64,0xC9,0x3B,0xB2,0x00,0x02,0x14,0x9D,0xCE,0x29,0xE7,0xE2,0x96,0x74};
+  static const char* ascii_fingerprint; // = "0F1CB6BE79E30867B6D98748EEA69B4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x0F,0x1C,0xB6,0xBE,0x79,0xE3,0x08,0x67,0xB6,0xD9,0x87,0x48,0xEE,0xA6,0x9B,0x4A};
 
   QuerySpec(const QuerySpec&);
   QuerySpec& operator=(const QuerySpec&);
@@ -96,7 +159,7 @@ class QuerySpec {
   virtual ~QuerySpec() throw();
   std::string name;
   std::string input;
-  std::vector<int64_t>  timestamp;
+  std::vector<LatencySpec>  timestamp;
   double budget;
 
   _QuerySpec__isset __isset;
@@ -105,7 +168,7 @@ class QuerySpec {
 
   void __set_input(const std::string& val);
 
-  void __set_timestamp(const std::vector<int64_t> & val);
+  void __set_timestamp(const std::vector<LatencySpec> & val);
 
   void __set_budget(const double val);
 

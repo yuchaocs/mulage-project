@@ -124,6 +124,156 @@ std::ostream& operator<<(std::ostream& out, const THostPort& obj) {
 }
 
 
+LatencySpec::~LatencySpec() throw() {
+}
+
+
+void LatencySpec::__set_instance_id(const std::string& val) {
+  this->instance_id = val;
+}
+
+void LatencySpec::__set_queuing_start_time(const int64_t val) {
+  this->queuing_start_time = val;
+}
+
+void LatencySpec::__set_serving_start_time(const int64_t val) {
+  this->serving_start_time = val;
+}
+
+void LatencySpec::__set_serving_end_time(const int64_t val) {
+  this->serving_end_time = val;
+}
+
+const char* LatencySpec::ascii_fingerprint = "01233FF45FD1A48AF6DDBF39A5D0547E";
+const uint8_t LatencySpec::binary_fingerprint[16] = {0x01,0x23,0x3F,0xF4,0x5F,0xD1,0xA4,0x8A,0xF6,0xDD,0xBF,0x39,0xA5,0xD0,0x54,0x7E};
+
+uint32_t LatencySpec::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->instance_id);
+          this->__isset.instance_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->queuing_start_time);
+          this->__isset.queuing_start_time = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->serving_start_time);
+          this->__isset.serving_start_time = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->serving_end_time);
+          this->__isset.serving_end_time = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t LatencySpec::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("LatencySpec");
+
+  xfer += oprot->writeFieldBegin("instance_id", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->instance_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("queuing_start_time", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeI64(this->queuing_start_time);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("serving_start_time", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64(this->serving_start_time);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("serving_end_time", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->serving_end_time);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(LatencySpec &a, LatencySpec &b) {
+  using ::std::swap;
+  swap(a.instance_id, b.instance_id);
+  swap(a.queuing_start_time, b.queuing_start_time);
+  swap(a.serving_start_time, b.serving_start_time);
+  swap(a.serving_end_time, b.serving_end_time);
+  swap(a.__isset, b.__isset);
+}
+
+LatencySpec::LatencySpec(const LatencySpec& other2) {
+  instance_id = other2.instance_id;
+  queuing_start_time = other2.queuing_start_time;
+  serving_start_time = other2.serving_start_time;
+  serving_end_time = other2.serving_end_time;
+  __isset = other2.__isset;
+}
+LatencySpec& LatencySpec::operator=(const LatencySpec& other3) {
+  instance_id = other3.instance_id;
+  queuing_start_time = other3.queuing_start_time;
+  serving_start_time = other3.serving_start_time;
+  serving_end_time = other3.serving_end_time;
+  __isset = other3.__isset;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const LatencySpec& obj) {
+  using apache::thrift::to_string;
+  out << "LatencySpec(";
+  out << "instance_id=" << to_string(obj.instance_id);
+  out << ", " << "queuing_start_time=" << to_string(obj.queuing_start_time);
+  out << ", " << "serving_start_time=" << to_string(obj.serving_start_time);
+  out << ", " << "serving_end_time=" << to_string(obj.serving_end_time);
+  out << ")";
+  return out;
+}
+
+
 QuerySpec::~QuerySpec() throw() {
 }
 
@@ -137,7 +287,7 @@ void QuerySpec::__set_input(const std::string& val) {
   this->input = val;
 }
 
-void QuerySpec::__set_timestamp(const std::vector<int64_t> & val) {
+void QuerySpec::__set_timestamp(const std::vector<LatencySpec> & val) {
   this->timestamp = val;
 }
 
@@ -145,8 +295,8 @@ void QuerySpec::__set_budget(const double val) {
   this->budget = val;
 }
 
-const char* QuerySpec::ascii_fingerprint = "7F2C64C93BB20002149DCE29E7E29674";
-const uint8_t QuerySpec::binary_fingerprint[16] = {0x7F,0x2C,0x64,0xC9,0x3B,0xB2,0x00,0x02,0x14,0x9D,0xCE,0x29,0xE7,0xE2,0x96,0x74};
+const char* QuerySpec::ascii_fingerprint = "0F1CB6BE79E30867B6D98748EEA69B4A";
+const uint8_t QuerySpec::binary_fingerprint[16] = {0x0F,0x1C,0xB6,0xBE,0x79,0xE3,0x08,0x67,0xB6,0xD9,0x87,0x48,0xEE,0xA6,0x9B,0x4A};
 
 uint32_t QuerySpec::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -188,14 +338,14 @@ uint32_t QuerySpec::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->timestamp.clear();
-            uint32_t _size2;
-            ::apache::thrift::protocol::TType _etype5;
-            xfer += iprot->readListBegin(_etype5, _size2);
-            this->timestamp.resize(_size2);
-            uint32_t _i6;
-            for (_i6 = 0; _i6 < _size2; ++_i6)
+            uint32_t _size4;
+            ::apache::thrift::protocol::TType _etype7;
+            xfer += iprot->readListBegin(_etype7, _size4);
+            this->timestamp.resize(_size4);
+            uint32_t _i8;
+            for (_i8 = 0; _i8 < _size4; ++_i8)
             {
-              xfer += iprot->readI64(this->timestamp[_i6]);
+              xfer += this->timestamp[_i8].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -240,11 +390,11 @@ uint32_t QuerySpec::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   xfer += oprot->writeFieldBegin("timestamp", ::apache::thrift::protocol::T_LIST, 3);
   {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->timestamp.size()));
-    std::vector<int64_t> ::const_iterator _iter7;
-    for (_iter7 = this->timestamp.begin(); _iter7 != this->timestamp.end(); ++_iter7)
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->timestamp.size()));
+    std::vector<LatencySpec> ::const_iterator _iter9;
+    for (_iter9 = this->timestamp.begin(); _iter9 != this->timestamp.end(); ++_iter9)
     {
-      xfer += oprot->writeI64((*_iter7));
+      xfer += (*_iter9).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -269,19 +419,19 @@ void swap(QuerySpec &a, QuerySpec &b) {
   swap(a.__isset, b.__isset);
 }
 
-QuerySpec::QuerySpec(const QuerySpec& other8) {
-  name = other8.name;
-  input = other8.input;
-  timestamp = other8.timestamp;
-  budget = other8.budget;
-  __isset = other8.__isset;
+QuerySpec::QuerySpec(const QuerySpec& other10) {
+  name = other10.name;
+  input = other10.input;
+  timestamp = other10.timestamp;
+  budget = other10.budget;
+  __isset = other10.__isset;
 }
-QuerySpec& QuerySpec::operator=(const QuerySpec& other9) {
-  name = other9.name;
-  input = other9.input;
-  timestamp = other9.timestamp;
-  budget = other9.budget;
-  __isset = other9.__isset;
+QuerySpec& QuerySpec::operator=(const QuerySpec& other11) {
+  name = other11.name;
+  input = other11.input;
+  timestamp = other11.timestamp;
+  budget = other11.budget;
+  __isset = other11.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const QuerySpec& obj) {
@@ -402,17 +552,17 @@ void swap(RegMessage &a, RegMessage &b) {
   swap(a.__isset, b.__isset);
 }
 
-RegMessage::RegMessage(const RegMessage& other10) {
-  app_name = other10.app_name;
-  endpoint = other10.endpoint;
-  budget = other10.budget;
-  __isset = other10.__isset;
+RegMessage::RegMessage(const RegMessage& other12) {
+  app_name = other12.app_name;
+  endpoint = other12.endpoint;
+  budget = other12.budget;
+  __isset = other12.__isset;
 }
-RegMessage& RegMessage::operator=(const RegMessage& other11) {
-  app_name = other11.app_name;
-  endpoint = other11.endpoint;
-  budget = other11.budget;
-  __isset = other11.__isset;
+RegMessage& RegMessage::operator=(const RegMessage& other13) {
+  app_name = other13.app_name;
+  endpoint = other13.endpoint;
+  budget = other13.budget;
+  __isset = other13.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const RegMessage& obj) {

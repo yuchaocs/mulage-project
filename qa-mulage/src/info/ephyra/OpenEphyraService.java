@@ -62,6 +62,7 @@ import edu.umich.clarity.thrift.RegMessage;
 import edu.umich.clarity.thrift.RegReply;
 import edu.umich.clarity.thrift.SchedulerService;
 import edu.umich.clarity.thrift.THostPort;
+import edu.umich.clarity.thrift.LatencySpec;
 
 import java.util.ArrayList;
 import com.opencsv.CSVWriter;
@@ -197,7 +198,10 @@ public class OpenEphyraService implements IPAService.Iface {
 	@Override
 	public void submitQuery(QuerySpec query) throws TException {
 		// timestamp the query when it is enqueued (start)
-		query.getTimestamp().add(System.currentTimeMillis());
+		LatencySpec latencySpec = new LatencySpec();
+		latencySpec.setInstance_id(this.SERVICE_NAME + "_" + this.SERVICE_IP + "_" + this.SERVICE_PORT);
+		latencySpec.setQueuing_start_time(System.currentTimeMillis());
+		query.getTimestamp().add(latencySpec);
 		try {
 			queryQueue.put(query);
 		} catch (InterruptedException e) {
@@ -225,10 +229,11 @@ public class OpenEphyraService implements IPAService.Iface {
 					int randLine = new Integer(query.getName()).intValue() % INPUT_RECYCLE;
 					String question = getQuestion(new File(QUESTION_FILE_PATH), randLine);
 					
-					long queuing_start_time = query.getTimestamp().get(
-							query.getTimestamp().size() - 1);
+					LatencySpec latencySpec = query.getTimestamp().get(
+                                                        query.getTimestamp().size() - 1);
+					long queuing_start_time = latencySpec.getQueuing_start_time();
 					long process_start_time = System.currentTimeMillis();
-					query.getTimestamp().add(process_start_time);
+					latencySpec.setServing_start_time(process_start_time);
 					/**
 					 * TODO 1. use the latency model to predict the serving time
 					 * 2. based on the queuing and serving time to see if the
@@ -253,7 +258,7 @@ public class OpenEphyraService implements IPAService.Iface {
 					LOG.info(counter + " queries have been processed so far...");
 					LOG.info("===============================================");
 					// timestamp the query when it is served (end)
-					query.getTimestamp().add(process_end_time);
+					latencySpec.setServing_end_time(process_end_time);
 					// update the query budget
 					query.setBudget(query.getBudget()
 							- (process_end_time - process_start_time));
