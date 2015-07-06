@@ -251,7 +251,6 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 //					spec->qs.timestamp.push_back(process_start_time);
 					spec->qs.timestamp.at(spec->qs.timestamp.size()-1).serving_start_time = process_start_time;
-				
 			//call the query	
 					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
 				// int rand_input = rand() % this->input_list.size();	
