@@ -29,14 +29,14 @@ sleep 5
 echo "=========================================="
 cd $immdir
 echo "starting the image matching service..."
-./start-im-service.sh $service_ip $imm_service_port $scheduler_ip $scheduler_port $imm_num_client
+./start-im-service.sh $service_ip $imm_service_port $scheduler_ip $scheduler_port $imm_num_client $queuing_policy
 cd - > /dev/null
 sleep 5
 
 echo "=========================================="
 cd $asrdir
 echo "starting the speech recognition service..."
-./start-asr-service.sh $service_ip $asr_service_port $scheduler_ip $scheduler_port $asr_num_client
+./start-asr-service.sh $service_ip $asr_service_port $scheduler_ip $scheduler_port $asr_num_client $queuing_policy
 sleep 5
 
 echo "all done"

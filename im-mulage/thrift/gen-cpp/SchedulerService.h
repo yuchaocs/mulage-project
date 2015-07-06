@@ -168,8 +168,8 @@ typedef struct _SchedulerService_enqueueFinishedQuery_args__isset {
 class SchedulerService_enqueueFinishedQuery_args {
  public:
 
-  static const char* ascii_fingerprint; // = "F65E47F1B51F74ECBB14A25350256077";
-  static const uint8_t binary_fingerprint[16]; // = {0xF6,0x5E,0x47,0xF1,0xB5,0x1F,0x74,0xEC,0xBB,0x14,0xA2,0x53,0x50,0x25,0x60,0x77};
+  static const char* ascii_fingerprint; // = "82246FE820A3526C6D99BE1DF7A0AD14";
+  static const uint8_t binary_fingerprint[16]; // = {0x82,0x24,0x6F,0xE8,0x20,0xA3,0x52,0x6C,0x6D,0x99,0xBE,0x1D,0xF7,0xA0,0xAD,0x14};
 
   SchedulerService_enqueueFinishedQuery_args(const SchedulerService_enqueueFinishedQuery_args&);
   SchedulerService_enqueueFinishedQuery_args& operator=(const SchedulerService_enqueueFinishedQuery_args&);
@@ -205,8 +205,8 @@ class SchedulerService_enqueueFinishedQuery_args {
 class SchedulerService_enqueueFinishedQuery_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "F65E47F1B51F74ECBB14A25350256077";
-  static const uint8_t binary_fingerprint[16]; // = {0xF6,0x5E,0x47,0xF1,0xB5,0x1F,0x74,0xEC,0xBB,0x14,0xA2,0x53,0x50,0x25,0x60,0x77};
+  static const char* ascii_fingerprint; // = "82246FE820A3526C6D99BE1DF7A0AD14";
+  static const uint8_t binary_fingerprint[16]; // = {0x82,0x24,0x6F,0xE8,0x20,0xA3,0x52,0x6C,0x6D,0x99,0xBE,0x1D,0xF7,0xA0,0xAD,0x14};
 
 
   virtual ~SchedulerService_enqueueFinishedQuery_pargs() throw();

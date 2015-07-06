@@ -162,16 +162,19 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			gettimeofday(&now, 0);
 			int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
 
+			LatencySpec latencySpec;
+                        latencySpec.instance_id = this->SERVICE_NAME + "_" + this->SERVICE_IP + "_" + to_string(this->SERVICE_PORT);
+                        latencySpec.queuing_start_time = current;
 			if(this->QUEUE_TYPE == "priority") {
 				newSpec = query;
 //				QuerySpec newSpec(query);
-				newSpec.timestamp.push_back(current);
+				newSpec.timestamp.push_back(latencySpec);
 				// 2. put the query to a thread saft queue structure
 				qq.push(newSpec);
 			}
 			else if(this->QUEUE_TYPE == "fifo") {
 				FIFO_QuerySpec newFIFOSpec(query);
-				newFIFOSpec.qs.timestamp.push_back(current);
+				newFIFOSpec.qs.timestamp.push_back(latencySpec);
 				// 2. put the query to a thread saft queue structure
 				fifo_qq.push(newFIFOSpec);
 			}
@@ -194,12 +197,13 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 //				std::shared_ptr<QuerySpec> spec = this->qq.wait_and_pop();
 				if(this->QUEUE_TYPE == "priority") {
 					auto spec = this->qq.wait_and_pop();
-					queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1);
+					LatencySpec latencySpec = spec->timestamp.at(spec->timestamp.size()-1);
+					queuing_start_time = latencySpec.queuing_start_time;
 					cout << "=============================================================" << endl;
 					cout << "IM queue length is " << this->qq.size() << endl;	
 					gettimeofday(&now, 0);
 					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-					spec->timestamp.push_back(process_start_time);
+					latencySpec.serving_start_time = process_start_time;
 		
 			//call the query	
 					int rand_input = atoi(spec->name.c_str()) % this->input_recycle;
@@ -220,7 +224,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					log << this->qq.size() << endl;
 					log.close();
 				
-					spec->timestamp.push_back(process_end_time);
+					latencySpec.serving_end_time = process_end_time;
 					spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
 
 					ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
@@ -244,19 +248,19 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				} 
 				else if (this->QUEUE_TYPE == "fifo") {
 					auto spec = this->fifo_qq.wait_and_pop();
-					queuing_start_time = spec->qs.timestamp.at(spec->qs.timestamp.size()-1);
+					LatencySpec latencySpec = spec->qs.timestamp.at(spec->qs.timestamp.size()-1);
+					queuing_start_time = latencySpec.queuing_start_time;
 					cout << "=============================================================" << endl;
 					cout << "IM queue length is " << this->fifo_qq.size() << endl;	
 					gettimeofday(&now, 0);
 					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-					spec->qs.timestamp.push_back(process_start_time);
+					latencySpec.serving_start_time = process_start_time;
 		
 			//call the query	
 					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
 					match_img(this->input_list.at(rand_input));
 					gettimeofday(&now, 0);
 					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-				
 					this->num_completed ++;	
 				
 					cout << "Queuing time is " << process_start_time-queuing_start_time << " ms, " 
@@ -268,7 +272,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					log << this->fifo_qq.size() << endl;
 					log.close();
 				
-					spec->qs.timestamp.push_back(process_end_time);
+					latencySpec.serving_end_time = process_end_time;
 					spec->qs.__set_budget( spec->qs.budget - (process_end_time - process_start_time) );
 
 					ThreadSafePriorityQueue<FIFO_QuerySpec> waiting_queries;		//query queue
