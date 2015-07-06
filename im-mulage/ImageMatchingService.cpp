@@ -116,11 +116,12 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			build_model();
 		}
 		
-		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type, int core) {
+		ImageMatchingServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type, int core, float freq) {
 			this->matcher = new FlannBasedMatcher();
 			this->extractor = new SurfDescriptorExtractor();
 			this->detector = new SurfFeatureDetector();
-			this->budget = 100;
+//			this->budget = 100;
+			this->budget = freq;
 			this->SERVICE_NAME = "imm";
 			this->SCHEDULER_IP = scheduler_ip;
 			this->SCHEDULER_PORT = scheduler_port;
@@ -495,17 +496,19 @@ int main(int argc, char **argv){
 	String scheduler_ip;
 	String queue_type;
 	int core;
+	float freq;
 	service_ip = argv[1];
 	service_port = atoi(argv[2]);
 	scheduler_ip = argv[3];
 	scheduler_port = atoi(argv[4]);
 	queue_type = argv[5];
 	core = atoi(argv[6]);
+	freq = atof(argv[7]);
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 //	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler();
-	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type, core);
+	ImageMatchingServiceHandler *ImageMatchingService = new ImageMatchingServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type, core, freq);
   	boost::shared_ptr<ImageMatchingServiceHandler> handler(ImageMatchingService);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));

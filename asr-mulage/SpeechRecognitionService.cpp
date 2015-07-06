@@ -111,8 +111,9 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			this->SERVICE_PORT = 9093;
 		}
 
-		SpeechRecognitionServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type, int core) {
-			this->budget = 100;
+		SpeechRecognitionServiceHandler(String service_ip, int service_port, String scheduler_ip, int scheduler_port, String queue_type, int core, float freq) {
+//			this->budget = 100;
+			this->budget = freq;
 			this->SERVICE_NAME = "asr";
 			this->SCHEDULER_IP = scheduler_ip;
 			this->SCHEDULER_PORT = scheduler_port;
@@ -408,18 +409,21 @@ int main(int argc, char **argv){
 	String scheduler_ip;
 	String queue_type;
 	int core;
+	float freq;
+
 	service_ip = argv[1];
 	service_port = atoi(argv[2]);
 	scheduler_ip = argv[3];
 	scheduler_port = atoi(argv[4]);
 	queue_type = argv[5];
 	core = atoi(argv[6]);
+	freq = atof(argv[7]);
 
 	// initial the image matching server
 	// TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	// boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 //	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler();
-	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type, core);
+	SpeechRecognitionServiceHandler *speechRecognition = new SpeechRecognitionServiceHandler(service_ip, service_port, scheduler_ip, scheduler_port, queue_type, core, freq);
   	boost::shared_ptr<SpeechRecognitionServiceHandler> handler(speechRecognition);
   	// boost::shared_ptr<ImageMatchingServiceHandler> handler(new ImageMatchingServiceHandler());
 	boost::shared_ptr<TProcessor> processor(new IPAServiceProcessor(handler));
