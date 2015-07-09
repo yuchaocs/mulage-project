@@ -277,8 +277,8 @@ typedef struct _IPAService_submitQuery_args__isset {
 class IPAService_submitQuery_args {
  public:
 
-  static const char* ascii_fingerprint; // = "82246FE820A3526C6D99BE1DF7A0AD14";
-  static const uint8_t binary_fingerprint[16]; // = {0x82,0x24,0x6F,0xE8,0x20,0xA3,0x52,0x6C,0x6D,0x99,0xBE,0x1D,0xF7,0xA0,0xAD,0x14};
+  static const char* ascii_fingerprint; // = "6BC5D6EEA323C914C1A31B76B2BCBB89";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0xC5,0xD6,0xEE,0xA3,0x23,0xC9,0x14,0xC1,0xA3,0x1B,0x76,0xB2,0xBC,0xBB,0x89};
 
   IPAService_submitQuery_args(const IPAService_submitQuery_args&);
   IPAService_submitQuery_args& operator=(const IPAService_submitQuery_args&);
@@ -314,8 +314,8 @@ class IPAService_submitQuery_args {
 class IPAService_submitQuery_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "82246FE820A3526C6D99BE1DF7A0AD14";
-  static const uint8_t binary_fingerprint[16]; // = {0x82,0x24,0x6F,0xE8,0x20,0xA3,0x52,0x6C,0x6D,0x99,0xBE,0x1D,0xF7,0xA0,0xAD,0x14};
+  static const char* ascii_fingerprint; // = "6BC5D6EEA323C914C1A31B76B2BCBB89";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0xC5,0xD6,0xEE,0xA3,0x23,0xC9,0x14,0xC1,0xA3,0x1B,0x76,0xB2,0xBC,0xBB,0x89};
 
 
   virtual ~IPAService_submitQuery_pargs() throw();

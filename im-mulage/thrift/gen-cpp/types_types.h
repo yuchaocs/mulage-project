@@ -138,22 +138,23 @@ class LatencySpec {
 void swap(LatencySpec &a, LatencySpec &b);
 
 typedef struct _QuerySpec__isset {
-  _QuerySpec__isset() : name(false), input(false), timestamp(false), budget(false) {}
+  _QuerySpec__isset() : name(false), input(false), timestamp(false), budget(false), floatingBudget(false) {}
   bool name :1;
   bool input :1;
   bool timestamp :1;
   bool budget :1;
+  bool floatingBudget :1;
 } _QuerySpec__isset;
 
 class QuerySpec {
  public:
 
-  static const char* ascii_fingerprint; // = "0F1CB6BE79E30867B6D98748EEA69B4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x0F,0x1C,0xB6,0xBE,0x79,0xE3,0x08,0x67,0xB6,0xD9,0x87,0x48,0xEE,0xA6,0x9B,0x4A};
+  static const char* ascii_fingerprint; // = "A54304EB3E0AD9A9AE80F7CA6F6AE4D2";
+  static const uint8_t binary_fingerprint[16]; // = {0xA5,0x43,0x04,0xEB,0x3E,0x0A,0xD9,0xA9,0xAE,0x80,0xF7,0xCA,0x6F,0x6A,0xE4,0xD2};
 
   QuerySpec(const QuerySpec&);
   QuerySpec& operator=(const QuerySpec&);
-  QuerySpec() : name(), input(), budget(0) {
+  QuerySpec() : name(), input(), budget(0), floatingBudget(0) {
   }
 
   virtual ~QuerySpec() throw();
@@ -161,6 +162,7 @@ class QuerySpec {
   std::string input;
   std::vector<LatencySpec>  timestamp;
   double budget;
+  double floatingBudget;
 
   _QuerySpec__isset __isset;
 
@@ -171,6 +173,8 @@ class QuerySpec {
   void __set_timestamp(const std::vector<LatencySpec> & val);
 
   void __set_budget(const double val);
+
+  void __set_floatingBudget(const double val);
 
   bool operator == (const QuerySpec & rhs) const
   {
@@ -183,6 +187,8 @@ class QuerySpec {
     if (!(timestamp == rhs.timestamp))
       return false;
     if (!(budget == rhs.budget))
+      return false;
+    if (!(floatingBudget == rhs.floatingBudget))
       return false;
     return true;
   }

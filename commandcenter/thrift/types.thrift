@@ -6,6 +6,7 @@ struct THostPort {
 }
 
 struct LatencySpec {
+	// servicetype_ip_port
 	1: string instance_id;
 	2: i64 queuing_start_time;
 	// serving start time equals queuing end time
@@ -17,7 +18,8 @@ struct QuerySpec {
 	1: optional string name;
 	2: binary input;
 	3: list<LatencySpec> timestamp;
-	4: double budget; 
+	4: double budget;
+	5: double floatingBudget;
 }
 
 struct RegMessage {

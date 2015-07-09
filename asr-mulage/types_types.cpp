@@ -295,8 +295,12 @@ void QuerySpec::__set_budget(const double val) {
   this->budget = val;
 }
 
-const char* QuerySpec::ascii_fingerprint = "0F1CB6BE79E30867B6D98748EEA69B4A";
-const uint8_t QuerySpec::binary_fingerprint[16] = {0x0F,0x1C,0xB6,0xBE,0x79,0xE3,0x08,0x67,0xB6,0xD9,0x87,0x48,0xEE,0xA6,0x9B,0x4A};
+void QuerySpec::__set_floatingBudget(const double val) {
+  this->floatingBudget = val;
+}
+
+const char* QuerySpec::ascii_fingerprint = "A54304EB3E0AD9A9AE80F7CA6F6AE4D2";
+const uint8_t QuerySpec::binary_fingerprint[16] = {0xA5,0x43,0x04,0xEB,0x3E,0x0A,0xD9,0xA9,0xAE,0x80,0xF7,0xCA,0x6F,0x6A,0xE4,0xD2};
 
 uint32_t QuerySpec::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -362,6 +366,14 @@ uint32_t QuerySpec::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_DOUBLE) {
+          xfer += iprot->readDouble(this->floatingBudget);
+          this->__isset.floatingBudget = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -404,6 +416,10 @@ uint32_t QuerySpec::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeDouble(this->budget);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("floatingBudget", ::apache::thrift::protocol::T_DOUBLE, 5);
+  xfer += oprot->writeDouble(this->floatingBudget);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -416,6 +432,7 @@ void swap(QuerySpec &a, QuerySpec &b) {
   swap(a.input, b.input);
   swap(a.timestamp, b.timestamp);
   swap(a.budget, b.budget);
+  swap(a.floatingBudget, b.floatingBudget);
   swap(a.__isset, b.__isset);
 }
 
@@ -424,6 +441,7 @@ QuerySpec::QuerySpec(const QuerySpec& other10) {
   input = other10.input;
   timestamp = other10.timestamp;
   budget = other10.budget;
+  floatingBudget = other10.floatingBudget;
   __isset = other10.__isset;
 }
 QuerySpec& QuerySpec::operator=(const QuerySpec& other11) {
@@ -431,6 +449,7 @@ QuerySpec& QuerySpec::operator=(const QuerySpec& other11) {
   input = other11.input;
   timestamp = other11.timestamp;
   budget = other11.budget;
+  floatingBudget = other11.floatingBudget;
   __isset = other11.__isset;
   return *this;
 }
@@ -441,6 +460,7 @@ std::ostream& operator<<(std::ostream& out, const QuerySpec& obj) {
   out << ", " << "input=" << to_string(obj.input);
   out << ", " << "timestamp=" << to_string(obj.timestamp);
   out << ", " << "budget=" << to_string(obj.budget);
+  out << ", " << "floatingBudget=" << to_string(obj.floatingBudget);
   out << ")";
   return out;
 }
