@@ -8,18 +8,20 @@ service_ip=clarity28.eecs.umich.edu
 
 asr_service_port=9074
 imm_service_port=9084
-qa_service_port=9094
+qa_service_port=9093
 
-asr_num_client=5
-imm_num_client=5
-qa_num_client=5
+asr_num_client=1
+imm_num_client=1
+qa_num_client=2
+#qa_num_client=1
 
-queuing_policy="fifo"
+#queuing_policy="fifo"
+queuing_policy="priority"
 
 scheduler_ip=141.212.107.226
 scheduler_port=8888
 
-running_frequency=1.2
+running_frequency=1.8
 
 echo "=========================================="
 cd $qadir
