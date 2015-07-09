@@ -65,7 +65,8 @@ using namespace apache::thrift::server;
 namespace std {
 	template<> struct less<QuerySpec> {
 		bool operator()(const QuerySpec& k1, const QuerySpec& k2) const {
-			return k1.budget < k2.budget;
+//			return k1.budget < k2.budget;
+			return k1.floatingBudget < k2.floatingBudget;
 		}
 	};
 }
@@ -155,17 +156,44 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			latencySpec.queuing_start_time = current;
 
 			if(this->QUEUE_TYPE == "priority") {
-			newSpec = query;
+				newSpec = query;
+				newSpec.timestamp.push_back(latencySpec);
 			
-//			newSpec.timestamp.push_back(current);
-			newSpec.timestamp.push_back(latencySpec);
+				newSpec.floatingBudget=newSpec.budget;
+				ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
+				auto waiting_spec = this->qq.try_pop();
+			
+				while(waiting_spec != nullptr) {
+					waiting_spec->floatingBudget=waiting_spec->budget - (current- waiting_spec->timestamp.at(waiting_spec->timestamp.size()-1).queuing_start_time);
+					waiting_queries.push(*waiting_spec);
+					waiting_spec = this->qq.try_pop();
+				}
+				
+				int length = waiting_queries.size();	
+				for(int i=0;i<length;i++)
+				qq.push( *(waiting_queries.wait_and_pop()) );
+			
 			// 2. put the query to a thread saft queue structure
-			qq.push(newSpec);
+				qq.push(newSpec);
 			}
 			else if(this->QUEUE_TYPE == "fifo") {
 				FIFO_QuerySpec newFIFOSpec(query);
 //				newFIFOSpec.qs.timestamp.push_back(current);
 				newFIFOSpec.qs.timestamp.push_back(latencySpec);
+				
+				newFIFOSpec.qs.floatingBudget=newFIFOSpec.qs.budget;
+				
+				ThreadSafePriorityQueue<FIFO_QuerySpec> waiting_queries;		//query queue
+				auto waiting_spec = this->fifo_qq.try_pop();
+				while(waiting_spec != nullptr) {
+					waiting_spec->qs.floatingBudget=waiting_spec->qs.budget - (current- waiting_spec->qs.timestamp.at(waiting_spec->qs.timestamp.size()-1).queuing_start_time);
+					waiting_queries.push(*waiting_spec);
+					waiting_spec = this->fifo_qq.try_pop();
+				}
+				
+				int length = waiting_queries.size();	
+				for(int i=0;i<length;i++)
+					fifo_qq.push( *(waiting_queries.wait_and_pop()) );
 				// 2. put the query to a thread saft queue structure
 				fifo_qq.push(newFIFOSpec);
 			}
@@ -220,8 +248,9 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				
 					spec->timestamp.at(spec->timestamp.size()-1).serving_end_time = process_end_time;
 //					spec->timestamp.push_back(process_end_time);
-					spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
-
+//					spec->__set_budget( spec->budget - (process_end_time - process_start_time) );
+					spec->__set_budget( spec->budget - (process_end_time - queuing_start_time) );
+/*
 					ThreadSafePriorityQueue<QuerySpec> waiting_queries;		//query queue
 				
 					auto waiting_spec = this->qq.try_pop();
@@ -233,7 +262,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					int length = waiting_queries.size();
 					for(int i=0;i<length;i++)
 						qq.push( *(waiting_queries.wait_and_pop()) );
-				
+*/				
 					THostPort hostport;
 					this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
 					TClient tClient;
@@ -272,8 +301,9 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				
 //					spec->qs.timestamp.push_back(process_end_time);
 					spec->qs.timestamp.at(spec->qs.timestamp.size()-1).serving_end_time = process_end_time;
-					spec->qs.__set_budget(spec->qs.budget-(process_end_time - process_start_time) );
-
+//					spec->qs.__set_budget(spec->qs.budget-(process_end_time - process_start_time) );
+					spec->qs.__set_budget( spec->qs.budget - (process_end_time - queuing_start_time) );
+/*
 					ThreadSafePriorityQueue<FIFO_QuerySpec> waiting_queries;		//query queue
 					
 				
@@ -286,7 +316,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					int length = waiting_queries.size();
 					for(int i=0;i<length;i++)
 						fifo_qq.push( *(waiting_queries.wait_and_pop()) );
-					
+*/					
 					THostPort hostport;
 					this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
 					TClient tClient;
