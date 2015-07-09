@@ -223,9 +223,20 @@ public class OpenEphyraService implements IPAService.Iface {
 		// timestamp the query when it is enqueued (start)
 		LatencySpec latencySpec = new LatencySpec();
 		latencySpec.setInstance_id(this.SERVICE_NAME + "_" + this.SERVICE_IP + "_" + this.SERVICE_PORT);
-		latencySpec.setQueuing_start_time(System.currentTimeMillis());
+		long queuing_start_time = System.currentTimeMillis();
+		latencySpec.setQueuing_start_time(queuing_start_time);
 		query.getTimestamp().add(latencySpec);
+		// update the budget of all queries waiting in the queue
+                List<QuerySpec> waiting_queries = new ArrayList<QuerySpec>();
+                queryQueue.drainTo(waiting_queries);
+                for (QuerySpec waiting_query : waiting_queries) {
+			List<LatencySpec> latencyStat = waiting_query.getTimestamp();
+			long existing_queuing_time = latencyStat.get(latencyStat.size() - 1).getQueuing_start_time();
+			waiting_query.setFloatingBudget(waiting_query.getBudget() - (queuing_start_time - existing_queuing_time));
+                }
+                queryQueue.addAll(waiting_queries);
 		try {
+			query.setFloatingBudget(query.getBudget());
 			queryQueue.put(query);
 		} catch (InterruptedException e) {
 			LOG.error("failed to enqueue the query " + e.getMessage());
@@ -284,15 +295,7 @@ public class OpenEphyraService implements IPAService.Iface {
 					latencySpec.setServing_end_time(process_end_time);
 					// update the query budget
 					query.setBudget(query.getBudget()
-							- (process_end_time - process_start_time));
-					// update the budget of all queries waiting in the queue
-					List<QuerySpec> waiting_queries = new ArrayList<QuerySpec>();
-					queryQueue.drainTo(waiting_queries);
-					for (QuerySpec waiting_query : waiting_queries) {
-						waiting_query.setBudget(waiting_query.getBudget()
-								- (process_end_time - process_start_time));
-					}
-					queryQueue.addAll(waiting_queries);
+							- (process_end_time - queuing_start_time));
 					LOG.info("enqueing query to command center at "
 								+ SCHEDULER_IP + ":" + SCHEDULER_PORT);
 					try {

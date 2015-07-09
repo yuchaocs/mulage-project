@@ -10,7 +10,7 @@ public class QueryComparator<T> implements Comparator<T> {
 	public int compare(Object o1, Object o2) {
 		QuerySpec query1 = (QuerySpec) o1;
 		QuerySpec query2 = (QuerySpec) o2;
-		double result = query1.getBudget() - query2.getBudget();
+		double result = query1.getFloatingBudget() - query2.getFloatingBudget();
 		if (result > 0) {
 			return 1;
 		} else if (result < 0) {
