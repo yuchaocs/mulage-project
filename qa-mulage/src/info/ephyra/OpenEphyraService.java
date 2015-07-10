@@ -98,7 +98,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static final String FIFO_POLICY = "fifo";
 	private static final String PRIORITY_POLICY = "priority";
 	private BlockingQueue<QuerySpec> queryQueue;
-	private static SchedulerService.Client scheduler_client;
+	// private static SchedulerService.Client scheduler_client;
 	private static CSVWriter csvWriter = null;
 	private static final String FILE_HEADER = "qsize";
 	private static OpenEphyra qaInstance = null;
@@ -165,8 +165,10 @@ public class OpenEphyraService implements IPAService.Iface {
         	} catch (IOException e) {
         	    e.printStackTrace();
         	}
+		TClient clientDelegate = new TClient();
+		SchedulerService.Client scheduler_client = null;
 		try {
-			scheduler_client = TClient.creatSchedulerClient(SCHEDULER_IP,
+			scheduler_client = clientDelegate.createSchedulerClient(SCHEDULER_IP,
 					SCHEDULER_PORT);
 		} catch (IOException ex) {
 			LOG.error("Error creating thrift scheduler client"
@@ -179,6 +181,7 @@ public class OpenEphyraService implements IPAService.Iface {
 			LOG.info("registering to command center runnig at " + SCHEDULER_IP
 					+ ":" + SCHEDULER_PORT);
 			scheduler_client.registerBackend(regMessage);
+			clientDelegate.close();
 			LOG.info("service stage " + SERVICE_NAME
 					+ " successfully registered itself at " + SERVICE_IP + ":"
 					+ SERVICE_PORT);
@@ -300,13 +303,17 @@ public class OpenEphyraService implements IPAService.Iface {
 					LOG.info("enqueing query to command center at "
 								+ SCHEDULER_IP + ":" + SCHEDULER_PORT);
 					try {
+						TClient clientDelegate = new TClient();
+						SchedulerService.Client scheduler_client = clientDelegate.createSchedulerClient(SCHEDULER_IP, SCHEDULER_PORT);
 						scheduler_client.enqueueFinishedQuery(query);
+						clientDelegate.close();
 					} catch (TException e) {
 						LOG.error("Error failed to submit query to command center at "
 								+ SCHEDULER_IP
 								+ ":"
 								+ SCHEDULER_PORT
 								+ e.getMessage());
+					} catch (IOException ex) {
 					}
 				} catch (InterruptedException e) {
 					LOG.error("failed to pop the query from the queue"

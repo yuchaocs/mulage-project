@@ -12,8 +12,8 @@ qa_service_port=9093
 
 asr_num_client=1
 imm_num_client=1
-#qa_num_client=2
-qa_num_client=1
+qa_num_client=2
+#qa_num_client=1
 
 queuing_policy="fifo"
 #queuing_policy="priority"

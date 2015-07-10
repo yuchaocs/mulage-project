@@ -13,8 +13,8 @@ IPAServiceClient *TClient::creatIPAClient(string host, int port) {
 	boost::shared_ptr<TTransport> transport(new TFramedTransport(socket));
 	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
 	IPAServiceClient *client = new IPAServiceClient(protocol);
-	this->transport = transport;
 	transport->open();
+	this->transport = transport;
 	return client;
 }
 SchedulerServiceClient *TClient::creatSchedulerClient(string host, int port) {
@@ -22,8 +22,8 @@ SchedulerServiceClient *TClient::creatSchedulerClient(string host, int port) {
 	boost::shared_ptr<TTransport> transport(new TFramedTransport(socket));
 	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         SchedulerServiceClient *client = new SchedulerServiceClient(protocol);
-	this->transport = transport;
         transport->open();
+	this->transport = transport;
         return client;
 }
 	void TClient::close() {

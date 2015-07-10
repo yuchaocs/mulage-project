@@ -264,8 +264,11 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 						qq.push( *(waiting_queries.wait_and_pop()) );
 */				
 					THostPort hostport;
-					this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
 					TClient tClient;
+					SchedulerServiceClient *scheduler_client = tClient.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
+					scheduler_client->consultAddress(hostport, NEXT_STAGE);
+					tClient.close();
+
 					IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
 					service_client->submitQuery(*spec);
 					tClient.close();
@@ -319,8 +322,11 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 						fifo_qq.push( *(waiting_queries.wait_and_pop()) );
 */					
 					THostPort hostport;
-					this->scheduler_client->consultAddress(hostport, NEXT_STAGE);
 					TClient tClient;
+					SchedulerServiceClient *scheduler_client = tClient.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
+					scheduler_client->consultAddress(hostport, NEXT_STAGE);
+					tClient.close();
+
 					IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
 					service_client->submitQuery(spec->qs);
 					tClient.close();
@@ -331,7 +337,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		void initialize() {
 			// 1. register to the command center
 			TClient tClient;
-			this->scheduler_client = tClient.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
+			SchedulerServiceClient *scheduler_client = tClient.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
 			THostPort hostPort;
 			hostPort.ip = this->SERVICE_IP;
 			hostPort.port = this->SERVICE_PORT;
@@ -340,7 +346,8 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			regMessage.endpoint = hostPort;
 			regMessage.budget = this->budget;
 			cout << "registering to command center runnig at " << this->SCHEDULER_IP << ":" << this->SCHEDULER_PORT << endl;	
-			this->scheduler_client->registerBackend(regMessage);
+			scheduler_client->registerBackend(regMessage);
+			tClient.close();
 			cout << "service stage " << this->SERVICE_NAME << " successfully registered itself at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << endl;
 		
 			this->num_completed = 0;	
@@ -376,7 +383,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		// String DOWNSTREAM_SERVICE_IP;
 		// int DOWNSTREAM_SERVICE_PORT;
 		// IPAServiceClient *service_client;
-		SchedulerServiceClient *scheduler_client;
+		// SchedulerServiceClient *scheduler_client;
 		// THostPort randomAssignService(vector<THostPort> *service_list) {
 			// initialize random seed
 		// 	srand(time(NULL));
