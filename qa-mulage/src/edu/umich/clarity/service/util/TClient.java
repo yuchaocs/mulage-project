@@ -23,6 +23,7 @@ import edu.umich.clarity.thrift.SchedulerService;
 public class TClient {
 	private static final int TIMEOUT = 0;
 	private static final Logger LOG = Logger.getLogger(TClient.class);
+	private static TTransport transport = null;
 
 	public static IPAService.Client creatIPAClient(InetSocketAddress socket)
 			throws IOException {
@@ -39,6 +40,7 @@ public class TClient {
 		} catch (TTransportException te) {
 			LOG.error("Error creating IPA client to " + host + ":" + port);
 		}
+		transport = trans;
 		TProtocol proto = new TBinaryProtocol(trans);
 		IPAService.Client client = new IPAService.Client(proto);
 		return client;
@@ -59,8 +61,12 @@ public class TClient {
 		} catch (TTransportException te) {
 			LOG.error("Error creating Scheduler client to " + host + ":" + port);
 		}
+		transport = trans;
 		TProtocol proto = new TBinaryProtocol(trans);
 		SchedulerService.Client client = new SchedulerService.Client(proto);
 		return client;
+	}
+	public static void close() {
+		transport.close();
 	}
 }

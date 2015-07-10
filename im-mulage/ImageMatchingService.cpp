@@ -277,6 +277,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					TClient tClient;
                     IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
 					service_client->submitQuery(*spec);
+					tClient.close();
 				} 
 				else if (this->QUEUE_TYPE == "fifo") {
 					auto spec = this->fifo_qq.wait_and_pop();
@@ -325,6 +326,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					TClient tClient;
                     IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
 					service_client->submitQuery(spec->qs);
+					tClient.close();
 				}
 
 			}

@@ -26,10 +26,12 @@ using namespace apache::thrift::server;
 class TClient {
 	private:
 		int TIMEOUT;
+		boost::shared_ptr<TTransport> transport;
 	public:
 		TClient();
 		IPAServiceClient *creatIPAClient(string host, int port);
 		SchedulerServiceClient *creatSchedulerClient(string host, int port);
+		void close();
 };
 
 class TServers {
