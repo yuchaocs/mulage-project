@@ -235,6 +235,7 @@ public class OpenEphyraService implements IPAService.Iface {
 			waiting_query.setFloatingBudget(waiting_query.getBudget() - (queuing_start_time - existing_queuing_time));
                 }
                 queryQueue.addAll(waiting_queries);
+		
 		try {
 			query.setFloatingBudget(query.getBudget());
 			queryQueue.put(query);
@@ -252,9 +253,9 @@ public class OpenEphyraService implements IPAService.Iface {
 			while (true) {
 				try {
 					QuerySpec query = queryQueue.take();
-					String csvEntry = "" + queryQueue.size() + ",";
-					csvWriter.writeNext(csvEntry.split(","));
-					csvWriter.flush();
+					// String csvEntry = "" + queryQueue.size() + ",";
+					// csvWriter.writeNext(csvEntry.split(","));
+					// csvWriter.flush();
 					// timestamp the query when it is enqueued (end)
 					// this is also the timestamp for the start of serving
 					// (start)
@@ -310,9 +311,10 @@ public class OpenEphyraService implements IPAService.Iface {
 				} catch (InterruptedException e) {
 					LOG.error("failed to pop the query from the queue"
 							+ e.getMessage());
-				} catch (IOException e) {
-                    			e.printStackTrace();
-                		}
+				} 
+				// catch (IOException e) {
+                    		// 	e.printStackTrace();
+                		// }
 			}
 		}
 	}
