@@ -216,6 +216,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		void launchQuery() {
 			cout << "keep watching whether there are queries in the queue" << endl;
 				struct timeval now;
+				struct timeval now2;
 				int64_t queuing_start_time;
 				int64_t process_start_time;
 				int64_t process_end_time;
@@ -232,17 +233,17 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					queuing_start_time = spec->timestamp.at(spec->timestamp.size()-1).queuing_start_time;
 					cout << "=============================================================" << endl;
 					cout << "IM queue length is " << this->qq.size() << endl;	
-					gettimeofday(&now, 0);
-					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-					spec->timestamp.at(spec->timestamp.size()-1).serving_start_time = process_start_time;
-		
-			//call the query	
 					int rand_input = atoi(spec->name.c_str()) % this->input_recycle;
+					
+					gettimeofday(&now, 0);
+					//call the query	
 				// int rand_input = rand() % this->input_list.size();	
 					match_img(this->input_list.at(rand_input));
 //					match_img(spec->input);
-					gettimeofday(&now, 0);
-					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					gettimeofday(&now2, 0);
+					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					spec->timestamp.at(spec->timestamp.size()-1).serving_start_time = process_start_time;
+					process_end_time = (now2.tv_sec*1E6+now2.tv_usec)/1000;
 				
 					this->num_completed ++;	
 				
@@ -284,15 +285,16 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					queuing_start_time = spec->qs.timestamp.at(spec->qs.timestamp.size()-1).queuing_start_time;
 					cout << "=============================================================" << endl;
 					cout << "IM queue length is " << this->fifo_qq.size() << endl;	
+					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
+					
 					gettimeofday(&now, 0);
+			//call the query	
+					match_img(this->input_list.at(rand_input));
+					gettimeofday(&now2, 0);
+					
 					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 					spec->qs.timestamp.at(spec->qs.timestamp.size()-1).serving_start_time = process_start_time;
-		
-			//call the query	
-					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
-					match_img(this->input_list.at(rand_input));
-					gettimeofday(&now, 0);
-					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					process_end_time = (now2.tv_sec*1E6+now2.tv_usec)/1000;
 					this->num_completed ++;	
 				
 					cout << "Queuing time is " << process_start_time-queuing_start_time << " ms, " 
