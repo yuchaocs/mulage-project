@@ -194,7 +194,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			
 				auto querySpec = this->fifo_qq.try_pop();
 				int num = 0;	
-				while(stealNum > -1 && querySpec != nullptr ) {
+				while(stealNum > 0 && querySpec != nullptr ) {
 					LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
 					struct timeval now;
 					gettimeofday(&now, 0);
@@ -202,10 +202,11 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
 					querySpecList.push_back(querySpec->qs);
 					stealNum--;
+					cout << "steals " << num << "th queries" << endl;
 					num ++;
+					querySpec = this->fifo_qq.try_pop();
 				}
 
-				cout << "steals " << num << "queries" << endl;
 			}
 		}
 
