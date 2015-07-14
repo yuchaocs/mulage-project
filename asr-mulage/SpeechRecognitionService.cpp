@@ -127,6 +127,70 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		}
 		~SpeechRecognitionServiceHandler() {
 		}
+		
+		void stealParentInstance(const  ::THostPort& hostPort) {
+			TClient tClient_service;
+            IPAServiceClient *service_client = tClient_service.creatIPAClient(hostPort.ip, hostPort.port);
+			tClient_service.close();
+
+			std::vector<::QuerySpec> queryList;
+			service_client->stealQueuedQueries(queryList);
+
+			if(this->QUEUE_TYPE == "priority") {
+				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
+					struct timeval now;
+					gettimeofday(&now, 0);
+					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
+					it->timestamp.at(it->timestamp.size()-1).queuing_start_time =  current - it->timestamp.at(it->timestamp.size()-1).queuing_start_time;
+					it->timestamp.at(it->timestamp.size()-1).instance_id = this->SERVICE_NAME + "_" + this->SERVICE_IP + "_" + to_string(this->SERVICE_PORT);
+					this->qq.push(*it);
+				}
+			}
+			else if(this->QUEUE_TYPE == "fifo") {
+				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
+					
+					struct timeval now;
+					gettimeofday(&now, 0);
+					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
+					it->timestamp.at(it->timestamp.size()-1).queuing_start_time =  current - it->timestamp.at(it->timestamp.size()-1).queuing_start_time;
+					it->timestamp.at(it->timestamp.size()-1).instance_id = this->SERVICE_NAME + "_" + this->SERVICE_IP + "_" + to_string(this->SERVICE_PORT);
+					FIFO_QuerySpec newFIFOSpec(*it);
+					this->fifo_qq.push(newFIFOSpec);
+				}
+			}
+		}
+		void stealQueuedQueries(std::vector< ::QuerySpec> & querySpecList) {
+			if(this->QUEUE_TYPE == "priority") {
+				int stealNum = this->qq.size()/2;
+			
+				auto querySpec = this->qq.try_pop();
+				
+				while(stealNum > -1 && querySpec != nullptr ) {
+					LatencySpec latencySpec = querySpec->timestamp.at(querySpec->timestamp.size()-1);
+					struct timeval now;
+					gettimeofday(&now, 0);
+					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
+					querySpec->timestamp.at(querySpec->timestamp.size()-1).queuing_start_time = current - querySpec->timestamp.at(querySpec->timestamp.size()-1).queuing_start_time;
+					querySpecList.push_back(*querySpec);
+					stealNum--;
+				}
+			}
+			else if(this->QUEUE_TYPE == "fifo") {
+				int stealNum = this->fifo_qq.size()/2;
+				auto querySpec = this->fifo_qq.try_pop();
+				
+				while(stealNum > -1 && querySpec != nullptr ) {
+					LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
+					struct timeval now;
+					gettimeofday(&now, 0);
+					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
+					querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
+					querySpecList.push_back(querySpec->qs);
+					stealNum--;
+				}
+			}
+		}
+			
 
 		int32_t reportQueueLength() {
 			if(this->QUEUE_TYPE == "priority") {
