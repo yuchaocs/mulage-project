@@ -219,6 +219,7 @@ public class OpenEphyraService implements IPAService.Iface {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+	return stealedQueries;
     }
 
     @Override
