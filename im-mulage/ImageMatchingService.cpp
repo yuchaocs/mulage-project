@@ -274,13 +274,14 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 						qq.push( *(waiting_queries.wait_and_pop()) );
 */					
 					THostPort hostport;
-			TClient tClient;
-			SchedulerServiceClient *scheduler_client = tClient.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
+			TClient tClient_scheduler;
+			SchedulerServiceClient *scheduler_client = tClient_scheduler.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
                     scheduler_client->consultAddress(hostport, NEXT_STAGE);
-			tClient.close();
-                    IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
+			tClient_scheduler.close();
+			TClient tClient_service;
+                    IPAServiceClient *service_client = tClient_service.creatIPAClient(hostport.ip, hostport.port);
 					service_client->submitQuery(*spec);
-					tClient.close();
+					tClient_service.close();
 				} 
 				else if (this->QUEUE_TYPE == "fifo") {
 					auto spec = this->fifo_qq.wait_and_pop();
@@ -326,14 +327,15 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 						fifo_qq.push( *(waiting_queries.wait_and_pop()) );
 */					
 					THostPort hostport;
-			TClient tClient;
-			SchedulerServiceClient *scheduler_client = tClient.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
+			TClient tClient_scheduler;
+			SchedulerServiceClient *scheduler_client = tClient_scheduler.creatSchedulerClient(this->SCHEDULER_IP, this->SCHEDULER_PORT);
                     scheduler_client->consultAddress(hostport, NEXT_STAGE);
-			tClient.close();
+			tClient_scheduler.close();
 
-                    IPAServiceClient *service_client = tClient.creatIPAClient(hostport.ip, hostport.port);
+			TClient tClient_service;
+                    IPAServiceClient *service_client = tClient_service.creatIPAClient(hostport.ip, hostport.port);
 					service_client->submitQuery(spec->qs);
-					tClient.close();
+					tClient_service.close();
 				}
 
 			}

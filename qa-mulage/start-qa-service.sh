@@ -25,7 +25,7 @@ scheduler_port=$4
 num_instance=$5
 queuing_policy=$6
 
-pinned_core=11
+pinned_core=10
 running_frequency=$7
 i=0
 

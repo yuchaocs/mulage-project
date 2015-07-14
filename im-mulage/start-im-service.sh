@@ -18,7 +18,7 @@ num_instance=$5
 queuing_policy=$6
 freq=$7
 
-pinned_core=5
+pinned_core=4
 i=0
 
 while [ $i -lt $num_instance ]
