@@ -18,7 +18,7 @@ class IPAServiceIf {
   virtual int32_t reportQueueLength() = 0;
   virtual void updatBudget(const double budget) = 0;
   virtual void submitQuery(const  ::QuerySpec& query) = 0;
-  virtual void stealParentInstance(const  ::THostPort& hostPort) = 0;
+  virtual int32_t stealParentInstance(const  ::THostPort& hostPort) = 0;
   virtual void stealQueuedQueries(std::vector< ::QuerySpec> & _return) = 0;
 };
 
@@ -59,8 +59,9 @@ class IPAServiceNull : virtual public IPAServiceIf {
   void submitQuery(const  ::QuerySpec& /* query */) {
     return;
   }
-  void stealParentInstance(const  ::THostPort& /* hostPort */) {
-    return;
+  int32_t stealParentInstance(const  ::THostPort& /* hostPort */) {
+    int32_t _return = 0;
+    return _return;
   }
   void stealQueuedQueries(std::vector< ::QuerySpec> & /* _return */) {
     return;
@@ -436,22 +437,33 @@ class IPAService_stealParentInstance_pargs {
   friend std::ostream& operator<<(std::ostream& out, const IPAService_stealParentInstance_pargs& obj);
 };
 
+typedef struct _IPAService_stealParentInstance_result__isset {
+  _IPAService_stealParentInstance_result__isset() : success(false) {}
+  bool success :1;
+} _IPAService_stealParentInstance_result__isset;
 
 class IPAService_stealParentInstance_result {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
   IPAService_stealParentInstance_result(const IPAService_stealParentInstance_result&);
   IPAService_stealParentInstance_result& operator=(const IPAService_stealParentInstance_result&);
-  IPAService_stealParentInstance_result() {
+  IPAService_stealParentInstance_result() : success(0) {
   }
 
   virtual ~IPAService_stealParentInstance_result() throw();
+  int32_t success;
 
-  bool operator == (const IPAService_stealParentInstance_result & /* rhs */) const
+  _IPAService_stealParentInstance_result__isset __isset;
+
+  void __set_success(const int32_t val);
+
+  bool operator == (const IPAService_stealParentInstance_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     return true;
   }
   bool operator != (const IPAService_stealParentInstance_result &rhs) const {
@@ -466,15 +478,22 @@ class IPAService_stealParentInstance_result {
   friend std::ostream& operator<<(std::ostream& out, const IPAService_stealParentInstance_result& obj);
 };
 
+typedef struct _IPAService_stealParentInstance_presult__isset {
+  _IPAService_stealParentInstance_presult__isset() : success(false) {}
+  bool success :1;
+} _IPAService_stealParentInstance_presult__isset;
 
 class IPAService_stealParentInstance_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
 
   virtual ~IPAService_stealParentInstance_presult() throw();
+  int32_t* success;
+
+  _IPAService_stealParentInstance_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -623,9 +642,9 @@ class IPAServiceClient : virtual public IPAServiceIf {
   void submitQuery(const  ::QuerySpec& query);
   void send_submitQuery(const  ::QuerySpec& query);
   void recv_submitQuery();
-  void stealParentInstance(const  ::THostPort& hostPort);
+  int32_t stealParentInstance(const  ::THostPort& hostPort);
   void send_stealParentInstance(const  ::THostPort& hostPort);
-  void recv_stealParentInstance();
+  int32_t recv_stealParentInstance();
   void stealQueuedQueries(std::vector< ::QuerySpec> & _return);
   void send_stealQueuedQueries();
   void recv_stealQueuedQueries(std::vector< ::QuerySpec> & _return);
@@ -712,13 +731,13 @@ class IPAServiceMultiface : virtual public IPAServiceIf {
     ifaces_[i]->submitQuery(query);
   }
 
-  void stealParentInstance(const  ::THostPort& hostPort) {
+  int32_t stealParentInstance(const  ::THostPort& hostPort) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->stealParentInstance(hostPort);
     }
-    ifaces_[i]->stealParentInstance(hostPort);
+    return ifaces_[i]->stealParentInstance(hostPort);
   }
 
   void stealQueuedQueries(std::vector< ::QuerySpec> & _return) {

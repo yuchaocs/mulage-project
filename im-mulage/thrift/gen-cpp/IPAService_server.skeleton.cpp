@@ -35,7 +35,7 @@ class IPAServiceHandler : virtual public IPAServiceIf {
     printf("submitQuery\n");
   }
 
-  void stealParentInstance(const  ::THostPort& hostPort) {
+  int32_t stealParentInstance(const  ::THostPort& hostPort) {
     // Your implementation goes here
     printf("stealParentInstance\n");
   }

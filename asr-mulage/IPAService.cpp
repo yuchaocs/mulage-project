@@ -586,7 +586,20 @@ uint32_t IPAService_stealParentInstance_result::read(::apache::thrift::protocol:
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -601,6 +614,11 @@ uint32_t IPAService_stealParentInstance_result::write(::apache::thrift::protocol
 
   xfer += oprot->writeStructBegin("IPAService_stealParentInstance_result");
 
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
+    xfer += oprot->writeI32(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -629,7 +647,20 @@ uint32_t IPAService_stealParentInstance_presult::read(::apache::thrift::protocol
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -998,10 +1029,10 @@ void IPAServiceClient::recv_submitQuery()
   return;
 }
 
-void IPAServiceClient::stealParentInstance(const  ::THostPort& hostPort)
+int32_t IPAServiceClient::stealParentInstance(const  ::THostPort& hostPort)
 {
   send_stealParentInstance(hostPort);
-  recv_stealParentInstance();
+  return recv_stealParentInstance();
 }
 
 void IPAServiceClient::send_stealParentInstance(const  ::THostPort& hostPort)
@@ -1018,7 +1049,7 @@ void IPAServiceClient::send_stealParentInstance(const  ::THostPort& hostPort)
   oprot_->getTransport()->flush();
 }
 
-void IPAServiceClient::recv_stealParentInstance()
+int32_t IPAServiceClient::recv_stealParentInstance()
 {
 
   int32_t rseqid = 0;
@@ -1043,12 +1074,17 @@ void IPAServiceClient::recv_stealParentInstance()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
+  int32_t _return;
   IPAService_stealParentInstance_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  return;
+  if (result.__isset.success) {
+    return _return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "stealParentInstance failed: unknown result");
 }
 
 void IPAServiceClient::stealQueuedQueries(std::vector< ::QuerySpec> & _return)
@@ -1310,7 +1346,8 @@ void IPAServiceProcessor::process_stealParentInstance(int32_t seqid, ::apache::t
 
   IPAService_stealParentInstance_result result;
   try {
-    iface_->stealParentInstance(args.hostPort);
+    result.success = iface_->stealParentInstance(args.hostPort);
+    result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "IPAService.stealParentInstance");

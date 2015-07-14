@@ -193,9 +193,10 @@ public class OpenEphyraService implements IPAService.Iface {
 	}
 
 	@Override
-    public void stealParentInstance(THostPort hostPort) throws TException {
+    public int stealParentInstance(THostPort hostPort) throws TException {
         TClient clientDelegate = new TClient();
         IPAService.Client service_client = null;
+	int stealedQueries = 0;
         try {
             service_client = clientDelegate.createIPAClient(hostPort.getIp(),
                     hostPort.getPort());
@@ -208,6 +209,10 @@ public class OpenEphyraService implements IPAService.Iface {
                 queryQueue.put(query);
             }
 	    clientDelegate.close();
+		stealedQueries = queryList.size();
+	LOG.info("===============================================");
+	LOG.info(stealedQueries + " queries have been stealed from service running on " + hostPort.getIp() + ":" + hostPort.getPort());
+	LOG.info("===============================================");
         } catch (IOException ex) {
             LOG.error("Error creating thrift scheduler client"
                     + ex.getMessage());
