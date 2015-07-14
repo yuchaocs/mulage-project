@@ -184,7 +184,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				auto querySpec = this->fifo_qq.try_pop();
 				int num = 0;	
 				
-				while(stealNum > 0 && querySpec != nullptr ) {
+				while(stealNum > -1 && querySpec != nullptr ) {
 					LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
 					struct timeval now;
 					gettimeofday(&now, 0);
