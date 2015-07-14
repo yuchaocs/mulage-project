@@ -146,6 +146,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 
 			std::vector<::QuerySpec> queryList;
 			service_client->stealQueuedQueries(queryList);
+			String victim = queryList.begin()->timestamp.at(queryList.begin()->timestamp.size()-1).instance_id;
+			cout << "Obtain " << queryList.size() << "queries" << "from " << victim << endl;
 
 			if(this->QUEUE_TYPE == "priority") {
 				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
@@ -191,8 +193,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				int stealNum = this->fifo_qq.size()/2;
 			
 				auto querySpec = this->fifo_qq.try_pop();
-				
-				while(stealNum > -1 && querySpec != nullptr ) {
+				int num = 0;	
+				while(stealNum > 0 && querySpec != nullptr ) {
 					LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
 					struct timeval now;
 					gettimeofday(&now, 0);
@@ -200,7 +202,11 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
 					querySpecList.push_back(querySpec->qs);
 					stealNum--;
+					cout << "steals " << num << "th queries" << endl;
+					num ++;
+					querySpec = this->fifo_qq.try_pop();
 				}
+
 			}
 		}
 
