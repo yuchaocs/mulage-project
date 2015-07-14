@@ -18,6 +18,8 @@ class IPAServiceIf {
   virtual int32_t reportQueueLength() = 0;
   virtual void updatBudget(const double budget) = 0;
   virtual void submitQuery(const  ::QuerySpec& query) = 0;
+  virtual void stealParentInstance(const  ::THostPort& hostPort) = 0;
+  virtual void stealQueuedQueries(std::vector< ::QuerySpec> & _return) = 0;
 };
 
 class IPAServiceIfFactory {
@@ -55,6 +57,12 @@ class IPAServiceNull : virtual public IPAServiceIf {
     return;
   }
   void submitQuery(const  ::QuerySpec& /* query */) {
+    return;
+  }
+  void stealParentInstance(const  ::THostPort& /* hostPort */) {
+    return;
+  }
+  void stealQueuedQueries(std::vector< ::QuerySpec> & /* _return */) {
     return;
   }
 };
@@ -371,6 +379,216 @@ class IPAService_submitQuery_presult {
   friend std::ostream& operator<<(std::ostream& out, const IPAService_submitQuery_presult& obj);
 };
 
+typedef struct _IPAService_stealParentInstance_args__isset {
+  _IPAService_stealParentInstance_args__isset() : hostPort(false) {}
+  bool hostPort :1;
+} _IPAService_stealParentInstance_args__isset;
+
+class IPAService_stealParentInstance_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
+  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
+
+  IPAService_stealParentInstance_args(const IPAService_stealParentInstance_args&);
+  IPAService_stealParentInstance_args& operator=(const IPAService_stealParentInstance_args&);
+  IPAService_stealParentInstance_args() {
+  }
+
+  virtual ~IPAService_stealParentInstance_args() throw();
+   ::THostPort hostPort;
+
+  _IPAService_stealParentInstance_args__isset __isset;
+
+  void __set_hostPort(const  ::THostPort& val);
+
+  bool operator == (const IPAService_stealParentInstance_args & rhs) const
+  {
+    if (!(hostPort == rhs.hostPort))
+      return false;
+    return true;
+  }
+  bool operator != (const IPAService_stealParentInstance_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const IPAService_stealParentInstance_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealParentInstance_args& obj);
+};
+
+
+class IPAService_stealParentInstance_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
+  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
+
+
+  virtual ~IPAService_stealParentInstance_pargs() throw();
+  const  ::THostPort* hostPort;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealParentInstance_pargs& obj);
+};
+
+
+class IPAService_stealParentInstance_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  IPAService_stealParentInstance_result(const IPAService_stealParentInstance_result&);
+  IPAService_stealParentInstance_result& operator=(const IPAService_stealParentInstance_result&);
+  IPAService_stealParentInstance_result() {
+  }
+
+  virtual ~IPAService_stealParentInstance_result() throw();
+
+  bool operator == (const IPAService_stealParentInstance_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const IPAService_stealParentInstance_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const IPAService_stealParentInstance_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealParentInstance_result& obj);
+};
+
+
+class IPAService_stealParentInstance_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+
+  virtual ~IPAService_stealParentInstance_presult() throw();
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealParentInstance_presult& obj);
+};
+
+
+class IPAService_stealQueuedQueries_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  IPAService_stealQueuedQueries_args(const IPAService_stealQueuedQueries_args&);
+  IPAService_stealQueuedQueries_args& operator=(const IPAService_stealQueuedQueries_args&);
+  IPAService_stealQueuedQueries_args() {
+  }
+
+  virtual ~IPAService_stealQueuedQueries_args() throw();
+
+  bool operator == (const IPAService_stealQueuedQueries_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const IPAService_stealQueuedQueries_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const IPAService_stealQueuedQueries_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealQueuedQueries_args& obj);
+};
+
+
+class IPAService_stealQueuedQueries_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+
+  virtual ~IPAService_stealQueuedQueries_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealQueuedQueries_pargs& obj);
+};
+
+typedef struct _IPAService_stealQueuedQueries_result__isset {
+  _IPAService_stealQueuedQueries_result__isset() : success(false) {}
+  bool success :1;
+} _IPAService_stealQueuedQueries_result__isset;
+
+class IPAService_stealQueuedQueries_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "E5F3C84DF8FFA296270A931F046C3750";
+  static const uint8_t binary_fingerprint[16]; // = {0xE5,0xF3,0xC8,0x4D,0xF8,0xFF,0xA2,0x96,0x27,0x0A,0x93,0x1F,0x04,0x6C,0x37,0x50};
+
+  IPAService_stealQueuedQueries_result(const IPAService_stealQueuedQueries_result&);
+  IPAService_stealQueuedQueries_result& operator=(const IPAService_stealQueuedQueries_result&);
+  IPAService_stealQueuedQueries_result() {
+  }
+
+  virtual ~IPAService_stealQueuedQueries_result() throw();
+  std::vector< ::QuerySpec>  success;
+
+  _IPAService_stealQueuedQueries_result__isset __isset;
+
+  void __set_success(const std::vector< ::QuerySpec> & val);
+
+  bool operator == (const IPAService_stealQueuedQueries_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const IPAService_stealQueuedQueries_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const IPAService_stealQueuedQueries_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealQueuedQueries_result& obj);
+};
+
+typedef struct _IPAService_stealQueuedQueries_presult__isset {
+  _IPAService_stealQueuedQueries_presult__isset() : success(false) {}
+  bool success :1;
+} _IPAService_stealQueuedQueries_presult__isset;
+
+class IPAService_stealQueuedQueries_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "E5F3C84DF8FFA296270A931F046C3750";
+  static const uint8_t binary_fingerprint[16]; // = {0xE5,0xF3,0xC8,0x4D,0xF8,0xFF,0xA2,0x96,0x27,0x0A,0x93,0x1F,0x04,0x6C,0x37,0x50};
+
+
+  virtual ~IPAService_stealQueuedQueries_presult() throw();
+  std::vector< ::QuerySpec> * success;
+
+  _IPAService_stealQueuedQueries_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const IPAService_stealQueuedQueries_presult& obj);
+};
+
 class IPAServiceClient : virtual public IPAServiceIf {
  public:
   IPAServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -405,6 +623,12 @@ class IPAServiceClient : virtual public IPAServiceIf {
   void submitQuery(const  ::QuerySpec& query);
   void send_submitQuery(const  ::QuerySpec& query);
   void recv_submitQuery();
+  void stealParentInstance(const  ::THostPort& hostPort);
+  void send_stealParentInstance(const  ::THostPort& hostPort);
+  void recv_stealParentInstance();
+  void stealQueuedQueries(std::vector< ::QuerySpec> & _return);
+  void send_stealQueuedQueries();
+  void recv_stealQueuedQueries(std::vector< ::QuerySpec> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -423,12 +647,16 @@ class IPAServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_reportQueueLength(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updatBudget(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_submitQuery(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_stealParentInstance(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_stealQueuedQueries(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   IPAServiceProcessor(boost::shared_ptr<IPAServiceIf> iface) :
     iface_(iface) {
     processMap_["reportQueueLength"] = &IPAServiceProcessor::process_reportQueueLength;
     processMap_["updatBudget"] = &IPAServiceProcessor::process_updatBudget;
     processMap_["submitQuery"] = &IPAServiceProcessor::process_submitQuery;
+    processMap_["stealParentInstance"] = &IPAServiceProcessor::process_stealParentInstance;
+    processMap_["stealQueuedQueries"] = &IPAServiceProcessor::process_stealQueuedQueries;
   }
 
   virtual ~IPAServiceProcessor() {}
@@ -482,6 +710,25 @@ class IPAServiceMultiface : virtual public IPAServiceIf {
       ifaces_[i]->submitQuery(query);
     }
     ifaces_[i]->submitQuery(query);
+  }
+
+  void stealParentInstance(const  ::THostPort& hostPort) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->stealParentInstance(hostPort);
+    }
+    ifaces_[i]->stealParentInstance(hostPort);
+  }
+
+  void stealQueuedQueries(std::vector< ::QuerySpec> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->stealQueuedQueries(_return);
+    }
+    ifaces_[i]->stealQueuedQueries(_return);
+    return;
   }
 
 };

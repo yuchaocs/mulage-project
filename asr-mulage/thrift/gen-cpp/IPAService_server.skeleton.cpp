@@ -35,6 +35,16 @@ class IPAServiceHandler : virtual public IPAServiceIf {
     printf("submitQuery\n");
   }
 
+  void stealParentInstance(const  ::THostPort& hostPort) {
+    // Your implementation goes here
+    printf("stealParentInstance\n");
+  }
+
+  void stealQueuedQueries(std::vector< ::QuerySpec> & _return) {
+    // Your implementation goes here
+    printf("stealQueuedQueries\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

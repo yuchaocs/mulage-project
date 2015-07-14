@@ -18,6 +18,7 @@ class SchedulerServiceIf {
   virtual void registerBackend(const  ::RegMessage& message) = 0;
   virtual void enqueueFinishedQuery(const  ::QuerySpec& query) = 0;
   virtual void consultAddress( ::THostPort& _return, const std::string& serviceType) = 0;
+  virtual int32_t warmupCount() = 0;
 };
 
 class SchedulerServiceIfFactory {
@@ -55,6 +56,10 @@ class SchedulerServiceNull : virtual public SchedulerServiceIf {
   }
   void consultAddress( ::THostPort& /* _return */, const std::string& /* serviceType */) {
     return;
+  }
+  int32_t warmupCount() {
+    int32_t _return = 0;
+    return _return;
   }
 };
 
@@ -382,6 +387,114 @@ class SchedulerService_consultAddress_presult {
   friend std::ostream& operator<<(std::ostream& out, const SchedulerService_consultAddress_presult& obj);
 };
 
+
+class SchedulerService_warmupCount_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  SchedulerService_warmupCount_args(const SchedulerService_warmupCount_args&);
+  SchedulerService_warmupCount_args& operator=(const SchedulerService_warmupCount_args&);
+  SchedulerService_warmupCount_args() {
+  }
+
+  virtual ~SchedulerService_warmupCount_args() throw();
+
+  bool operator == (const SchedulerService_warmupCount_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const SchedulerService_warmupCount_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SchedulerService_warmupCount_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_warmupCount_args& obj);
+};
+
+
+class SchedulerService_warmupCount_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+
+  virtual ~SchedulerService_warmupCount_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_warmupCount_pargs& obj);
+};
+
+typedef struct _SchedulerService_warmupCount_result__isset {
+  _SchedulerService_warmupCount_result__isset() : success(false) {}
+  bool success :1;
+} _SchedulerService_warmupCount_result__isset;
+
+class SchedulerService_warmupCount_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+  SchedulerService_warmupCount_result(const SchedulerService_warmupCount_result&);
+  SchedulerService_warmupCount_result& operator=(const SchedulerService_warmupCount_result&);
+  SchedulerService_warmupCount_result() : success(0) {
+  }
+
+  virtual ~SchedulerService_warmupCount_result() throw();
+  int32_t success;
+
+  _SchedulerService_warmupCount_result__isset __isset;
+
+  void __set_success(const int32_t val);
+
+  bool operator == (const SchedulerService_warmupCount_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SchedulerService_warmupCount_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SchedulerService_warmupCount_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_warmupCount_result& obj);
+};
+
+typedef struct _SchedulerService_warmupCount_presult__isset {
+  _SchedulerService_warmupCount_presult__isset() : success(false) {}
+  bool success :1;
+} _SchedulerService_warmupCount_presult__isset;
+
+class SchedulerService_warmupCount_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+
+  virtual ~SchedulerService_warmupCount_presult() throw();
+  int32_t* success;
+
+  _SchedulerService_warmupCount_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const SchedulerService_warmupCount_presult& obj);
+};
+
 class SchedulerServiceClient : virtual public SchedulerServiceIf {
  public:
   SchedulerServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -416,6 +529,9 @@ class SchedulerServiceClient : virtual public SchedulerServiceIf {
   void consultAddress( ::THostPort& _return, const std::string& serviceType);
   void send_consultAddress(const std::string& serviceType);
   void recv_consultAddress( ::THostPort& _return);
+  int32_t warmupCount();
+  void send_warmupCount();
+  int32_t recv_warmupCount();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -434,12 +550,14 @@ class SchedulerServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_registerBackend(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_enqueueFinishedQuery(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_consultAddress(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_warmupCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   SchedulerServiceProcessor(boost::shared_ptr<SchedulerServiceIf> iface) :
     iface_(iface) {
     processMap_["registerBackend"] = &SchedulerServiceProcessor::process_registerBackend;
     processMap_["enqueueFinishedQuery"] = &SchedulerServiceProcessor::process_enqueueFinishedQuery;
     processMap_["consultAddress"] = &SchedulerServiceProcessor::process_consultAddress;
+    processMap_["warmupCount"] = &SchedulerServiceProcessor::process_warmupCount;
   }
 
   virtual ~SchedulerServiceProcessor() {}
@@ -494,6 +612,15 @@ class SchedulerServiceMultiface : virtual public SchedulerServiceIf {
     }
     ifaces_[i]->consultAddress(_return, serviceType);
     return;
+  }
+
+  int32_t warmupCount() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->warmupCount();
+    }
+    return ifaces_[i]->warmupCount();
   }
 
 };

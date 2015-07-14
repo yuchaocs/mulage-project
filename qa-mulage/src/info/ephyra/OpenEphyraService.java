@@ -73,6 +73,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.LinkedList;
 
 /**
  * <code>OpenEphyra</code> is an open framework for question answering (QA).
@@ -190,6 +191,44 @@ public class OpenEphyraService implements IPAService.Iface {
 		}
 		new Thread(new processQueryRunnable()).start();
 	}
+
+	@Override
+    public void stealParentInstance(THostPort hostPort) throws TException {
+        TClient clientDelegate = new TClient();
+        IPAService.Client service_client = null;
+        try {
+            service_client = clientDelegate.createIPAClient(hostPort.getIp(),
+                    hostPort.getPort());
+            List<QuerySpec> queryList = service_client.stealQueuedQueries();
+            for (QuerySpec query : queryList) {
+                long resetTimestamp = System.currentTimeMillis();
+                LatencySpec latencySpec = query.getTimestamp().get(query.getTimestamp().size() - 1);
+                latencySpec.setQueuing_start_time(resetTimestamp - latencySpec.getQueuing_start_time());
+                latencySpec.setInstance_id(this.SERVICE_NAME + "_" + this.SERVICE_IP + "_" + this.SERVICE_PORT);
+                queryQueue.put(query);
+            }
+        } catch (IOException ex) {
+            LOG.error("Error creating thrift scheduler client"
+                    + ex.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<QuerySpec> stealQueuedQueries() throws TException {
+        int stealNum = queryQueue.size() / 2;
+        List<QuerySpec> querySpecList = new LinkedList<QuerySpec>();
+        QuerySpec querySpec = null;
+        while (stealNum > -1 && (querySpec = queryQueue.poll()) != null) {
+            LatencySpec latencySpec = querySpec.getTimestamp().get(querySpec.getTimestamp().size() - 1);
+            long currentTimestamp = System.currentTimeMillis();
+            latencySpec.setQueuing_start_time(currentTimestamp - latencySpec.getQueuing_start_time());
+            querySpecList.add(querySpec);
+            stealNum--;
+        }
+        return querySpecList;
+    }
 
 	@Override
 	public int reportQueueLength() {

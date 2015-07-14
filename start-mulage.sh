@@ -21,7 +21,7 @@ queuing_policy="fifo"
 scheduler_ip=141.212.107.226
 scheduler_port=8888
 
-running_frequency=1.2
+running_frequency=2.4
 
 echo "=========================================="
 cd $qadir

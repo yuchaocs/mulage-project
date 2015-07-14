@@ -35,6 +35,11 @@ class SchedulerServiceHandler : virtual public SchedulerServiceIf {
     printf("consultAddress\n");
   }
 
+  int32_t warmupCount() {
+    // Your implementation goes here
+    printf("warmupCount\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
