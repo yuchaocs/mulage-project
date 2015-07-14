@@ -207,6 +207,7 @@ public class OpenEphyraService implements IPAService.Iface {
                 latencySpec.setInstance_id(this.SERVICE_NAME + "_" + this.SERVICE_IP + "_" + this.SERVICE_PORT);
                 queryQueue.put(query);
             }
+	    clientDelegate.close();
         } catch (IOException ex) {
             LOG.error("Error creating thrift scheduler client"
                     + ex.getMessage());
