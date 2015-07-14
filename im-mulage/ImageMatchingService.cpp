@@ -143,7 +143,6 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 		void stealParentInstance(const  ::THostPort& hostPort) {
 			TClient tClient_service;
             IPAServiceClient *service_client = tClient_service.creatIPAClient(hostPort.ip, hostPort.port);
-			tClient_service.close();
 
 			std::vector<::QuerySpec> queryList;
 			service_client->stealQueuedQueries(queryList);
@@ -170,6 +169,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 					this->fifo_qq.push(newFIFOSpec);
 				}
 			}
+			tClient_service.close();
 		}
 		void stealQueuedQueries(std::vector< ::QuerySpec> & querySpecList) {
 			if(this->QUEUE_TYPE == "priority") {
