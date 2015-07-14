@@ -140,7 +140,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			delete matcher;
 		}
 	
-		void stealParentInstance(const  ::THostPort& hostPort) {
+		int32_t stealParentInstance(const  ::THostPort& hostPort) {
 			TClient tClient_service;
             IPAServiceClient *service_client = tClient_service.creatIPAClient(hostPort.ip, hostPort.port);
 
@@ -148,6 +148,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			service_client->stealQueuedQueries(queryList);
 			String victim = queryList.begin()->timestamp.at(queryList.begin()->timestamp.size()-1).instance_id;
 			cout << "Obtain " << queryList.size() << "queries" << "from " << victim << endl;
+			int32_t num = queryList.size();
 
 			if(this->QUEUE_TYPE == "priority") {
 				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
@@ -172,6 +173,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				}
 			}
 			tClient_service.close();
+			return num;
 		}
 		void stealQueuedQueries(std::vector< ::QuerySpec> & querySpecList) {
 			if(this->QUEUE_TYPE == "priority") {
