@@ -135,7 +135,8 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			std::vector<::QuerySpec> queryList;
 			service_client->stealQueuedQueries(queryList);
 			String victim = queryList.begin()->timestamp.at(queryList.begin()->timestamp.size()-1).instance_id;
-			cout << "Obtain " << queryList.size() << "queries" << "from " << victim << endl;
+
+			cout << "Obtain " << queryList.size() << "queries from " << victim << endl;
 			int32_t num = queryList.size();
 
 			if(this->QUEUE_TYPE == "priority") {
@@ -150,7 +151,6 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			}
 			else if(this->QUEUE_TYPE == "fifo") {
 				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
-					
 					struct timeval now;
 					gettimeofday(&now, 0);
 					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
@@ -181,20 +181,26 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			}
 			else if(this->QUEUE_TYPE == "fifo") {
 				int stealNum = this->fifo_qq.size()/2;
-				auto querySpec = this->fifo_qq.try_pop();
-				int num = 0;	
+				if(stealNum >= 1) {
+					auto querySpec = this->fifo_qq.try_pop();
+					int num = 0;	
 				
-				while(stealNum > -1 && querySpec != nullptr ) {
-					LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
-					struct timeval now;
-					gettimeofday(&now, 0);
-					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
-					querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
-					querySpecList.push_back(querySpec->qs);
-					stealNum--;
-					cout << "steals " << num << "th queries" << endl;
-					num++;
-					querySpec = this->fifo_qq.try_pop();
+					cout << "fifo_qq size is " << this->fifo_qq.size() << ", steal num is " << stealNum << endl;
+				
+					while(querySpec != nullptr) {
+						LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
+						struct timeval now;
+						gettimeofday(&now, 0);
+						int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
+						querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
+						querySpecList.push_back(querySpec->qs);
+						stealNum--;
+						cout << "steals " << num << "th queries" << endl;
+						num++;
+						if (stealNum > 0)
+							querySpec = this->fifo_qq.try_pop();
+						else break;
+					}
 				}
 			}
 		}

@@ -181,7 +181,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			
 				auto querySpec = this->qq.try_pop();
 				
-				while(stealNum > -1 && querySpec != nullptr ) {
+				while(querySpec != nullptr && stealNum > -1) {
 					LatencySpec latencySpec = querySpec->timestamp.at(querySpec->timestamp.size()-1);
 					struct timeval now;
 					gettimeofday(&now, 0);
@@ -193,22 +193,27 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			}
 			else if(this->QUEUE_TYPE == "fifo") {
 				int stealNum = this->fifo_qq.size()/2;
-			
-				auto querySpec = this->fifo_qq.try_pop();
-				int num = 0;	
-				while(stealNum > -1 && querySpec != nullptr ) {
-					LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
-					struct timeval now;
-					gettimeofday(&now, 0);
-					int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
-					querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
-					querySpecList.push_back(querySpec->qs);
-					stealNum--;
-					cout << "steals " << num << "th queries" << endl;
-					num ++;
-					querySpec = this->fifo_qq.try_pop();
+				if(stealNum >= 1) {	
+					auto querySpec = this->fifo_qq.try_pop();
+					int num = 0;	
+					
+					cout << "fifo_qq size is " << this->fifo_qq.size() << ", steal num is " << stealNum << endl;
+					
+					while(querySpec != nullptr) {
+						LatencySpec latencySpec = querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1);
+						struct timeval now;
+						gettimeofday(&now, 0);
+						int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
+						querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
+						querySpecList.push_back(querySpec->qs);
+						stealNum--;
+						cout << "steals " << num << "th queries" << endl;
+						num ++;
+						if(stealNum > 0)
+							querySpec = this->fifo_qq.try_pop();
+						else break;
+					}
 				}
-
 			}
 		}
 
