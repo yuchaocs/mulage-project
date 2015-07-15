@@ -135,10 +135,10 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			cout << "Start to steal queries from victim" << endl;
 			std::vector<::QuerySpec> queryList;
 			service_client->stealQueuedQueries(queryList);
-//			String victim = queryList.begin()->timestamp.at(queryList.begin()->timestamp.size()-1).instance_id;
-			cout << "Finish steal queries from victim" << endl;
-//			cout << "Obtain " << queryList.size() << "queries from " << victim << endl;
 			int32_t num = queryList.size();
+//			String victim = queryList.begin()->timestamp.at(queryList.begin()->timestamp.size()-1).instance_id;
+			cout << "Successfully steal " << num << " queries from victim" << endl;
+//			cout << "Obtain " << queryList.size() << "queries from " << victim << endl;
 
 			if(this->QUEUE_TYPE == "priority") {
 				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
