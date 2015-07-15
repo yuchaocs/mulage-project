@@ -104,7 +104,7 @@ public class OpenEphyraService implements IPAService.Iface {
 	private static final String FILE_HEADER = "qsize";
 	private static OpenEphyra qaInstance = null;
 	private static int total_num_question = 0;
-	
+	private static int warm_up_question = 20;
 	private static final int INPUT_RECYCLE = 100;
 	
 	public OpenEphyraService(String service_ip, String service_port, String scheduler_ip, String scheduler_port, String queue_policy, String core_id, String budget) {
@@ -166,6 +166,12 @@ public class OpenEphyraService implements IPAService.Iface {
         	} catch (IOException e) {
         	    e.printStackTrace();
         	}
+		LOG.info("warm up with " + warm_up_question + " questions before registering to command center");
+		for(int i = 0; i < warm_up_question; i++){
+			String question = getQuestion(new File(QUESTION_FILE_PATH), i);
+			qaInstance.commandLine(question);
+			LOG.info("warmed up with " + (i + 1) + " questions");
+		}
 		TClient clientDelegate = new TClient();
 		SchedulerService.Client scheduler_client = null;
 		try {
