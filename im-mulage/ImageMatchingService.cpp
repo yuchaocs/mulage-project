@@ -433,10 +433,7 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			regMessage.endpoint = hostPort;
 			regMessage.budget = this->budget;
 			cout << "registering to command center runnig at " << this->SCHEDULER_IP << ":" << this->SCHEDULER_PORT << endl;	
-			scheduler_client->registerBackend(regMessage);
-			tClient.close();
-			cout << "service stage " << this->SERVICE_NAME << " successfully registered itself at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << endl;
-		
+			
 			this->num_completed = 0;	
 			//parse the possible inputs	
 			ifstream input("input.txt");
@@ -444,6 +441,13 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 				input_list.push_back(line);
 //				cout << line << endl;
 			}
+
+			for (int i=0;i<20;i++) match_img(this->input_list.at(i));
+			
+			scheduler_client->registerBackend(regMessage);
+			tClient.close();
+			cout << "service stage " << this->SERVICE_NAME << " successfully registered itself at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << endl;
+		
 			// 2. launch the helper thread
 			boost::thread helper(boost::bind(&ImageMatchingServiceHandler::launchQuery, this));
 			
