@@ -282,6 +282,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 		void launchQuery() {
 			cout << "keep watching whether there are queries in the queue" << endl;
 				struct timeval now;
+				struct timeval now2;
 				int64_t queuing_start_time;
 				int64_t process_start_time;
 				int64_t process_end_time;
@@ -360,18 +361,18 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					cout << "=============================================================" << endl;
 					cout << "ASR queue length is " << this->fifo_qq.size() << endl;	
 				
-					gettimeofday(&now, 0);
-					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
-//					spec->qs.timestamp.push_back(process_start_time);
-					spec->qs.timestamp.at(spec->qs.timestamp.size()-1).serving_start_time = process_start_time;
-			//call the query	
 					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
+					gettimeofday(&now, 0);
+//					spec->qs.timestamp.push_back(process_start_time);
+			//call the query	
 				// int rand_input = rand() % this->input_list.size();	
 					String ret = execute_asr(this->input_list.at(rand_input));
 //				execute_asr(spec->input);
 				
-					gettimeofday(&now, 0);
-					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					gettimeofday(&now2, 0);
+					process_start_time = (now.tv_sec*1E6+now.tv_usec)/1000;
+					spec->qs.timestamp.at(spec->qs.timestamp.size()-1).serving_start_time = process_start_time;
+					process_end_time = (now2.tv_sec*1E6+now2.tv_usec)/1000;
 					this->num_completed++;
 					cout << "The parsed text is: " << ret << endl;
 					cout << "Queuing time is " << process_start_time - queuing_start_time << " ms, " 
