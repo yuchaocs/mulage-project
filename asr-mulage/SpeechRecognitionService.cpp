@@ -437,7 +437,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			}
 
 			for (int i=0;i<20;i++) execute_asr(this->input_list.at(i));
-
+			cout << "service stage " << this->SERVICE_NAME << " successfully warmed itself up at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << endl;
 			scheduler_client->registerBackend(regMessage);
 			tClient.close();
 			cout << "service stage " << this->SERVICE_NAME << " successfully registered itself at " << this->SERVICE_IP << ":" << this->SERVICE_PORT << endl;
