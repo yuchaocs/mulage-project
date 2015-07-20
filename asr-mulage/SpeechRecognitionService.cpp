@@ -446,7 +446,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			boost::thread helper(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this));
 //			int ret = std::system("cpufreq-set -c 0 -f 1500000");
 
-			ThreadPool<void> tp(2);
+			ThreadPool<void> tp(1);
 			boost::shared_future<void> f = tp.enqueue(boost::bind(&SpeechRecognitionServiceHandler::launchQuery, this), 1000);
 		}
 
