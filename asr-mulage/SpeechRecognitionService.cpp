@@ -367,13 +367,13 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			//call the query	
 					int rand_input = atoi(spec->qs.name.c_str()) % this->input_recycle;
 				// int rand_input = rand() % this->input_list.size();	
-					execute_asr(this->input_list.at(rand_input));
+					String ret = execute_asr(this->input_list.at(rand_input));
 //				execute_asr(spec->input);
 				
 					gettimeofday(&now, 0);
 					process_end_time = (now.tv_sec*1E6+now.tv_usec)/1000;
 					this->num_completed++;
-
+					cout << "The parsed text is: " << ret << endl;
 					cout << "Queuing time is " << process_start_time - queuing_start_time << " ms, " 
 						<< "Serving time is " << process_end_time - process_start_time << " ms."<< endl;	
 					cout << "Num of completed queries: " << this->num_completed << endl; 
