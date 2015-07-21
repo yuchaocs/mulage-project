@@ -366,6 +366,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 //					spec->qs.timestamp.push_back(process_start_time);
 			//call the query	
 				// int rand_input = rand() % this->input_list.size();	
+					cout << this->input_list.at(rand_input) << endl;
 					String ret = execute_asr(this->input_list.at(rand_input));
 //				execute_asr(spec->input);
 				
