@@ -453,8 +453,8 @@ class ImageMatchingServiceHandler : public IPAServiceIf {
 			boost::thread helper(boost::bind(&ImageMatchingServiceHandler::launchQuery, this));
 			
 			
-			ThreadPool<void> tp(1);
-			boost::shared_future<void> f = tp.enqueue(boost::bind(&ImageMatchingServiceHandler::launchQuery, this), 1000);
+//			ThreadPool<void> tp(1);
+//			boost::shared_future<void> f = tp.enqueue(boost::bind(&ImageMatchingServiceHandler::launchQuery, this), 1000);
 		}
 
 	private:
