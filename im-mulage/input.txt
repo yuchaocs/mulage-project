@@ -47,7 +47,6 @@ input/taj-mahal/2dfebad7-e157-457b-947f-f8b1d6044e48.jpg
 input/taj-mahal/1cf1effd-4be5-469a-a1fa-14b46d4781d9.jpg
 input/taj-mahal/ec8317af-bb79-43aa-8831-1aab52ac50b2.jpg
 input/taj-mahal/142b1ba1-04cc-4f65-a72d-4eff77111699.jpg
-input/taj-mahal/fb9e7201-ad4a-47cb-a6ce-6d3d1ad29613.jpg
 input/taj-mahal/a7a82ffd-6348-443a-993f-92178ac2902f.jpg
 input/taj-mahal/66b82a83-c9ea-4f59-93ec-b2afa70f838b.jpg
 input/taj-mahal/a6902db6-239d-4cf6-afae-9d2479c65a2a.jpg
@@ -56,7 +55,6 @@ input/taj-mahal/0c557af4-1149-404f-bf78-fcf5e0d87915.jpg
 input/taj-mahal/bb5190be-5573-496d-bc12-42322f4f2651.jpg
 input/taj-mahal/c2a55ad5-37c4-489e-a598-3fe47cfb7b51.jpg
 input/taj-mahal/4263b852-c207-4a30-abd7-c740699954b5.jpg
-input/taj-mahal/8d96fa09-3737-4d89-b6e2-0a6cc4f22c75.jpg
 input/taj-mahal/1999d16d-7be6-4ac6-8de1-92fcfa1e4fd7.jpg
 input/taj-mahal/09a45ed4-5603-45fe-a99a-f171cc937733.jpg
 input/taj-mahal/de88c584-1c7b-4240-8f04-359ee840fffc.jpg
@@ -77,10 +75,8 @@ input/sydney-opera-house/20fe2dc2-bed6-4b87-963d-ad85a0d4dca9.jpg
 input/sydney-opera-house/e257b438-10ea-47bc-bcc1-7d5bcef2cedc.jpg
 input/sydney-opera-house/eda1476a-ea81-4e33-a48e-6617d7a26de2.jpg
 input/sydney-opera-house/8fe098c1-ca43-43f6-b385-d8061748b64e.jpg
-input/sydney-opera-house/9347b9d5-2723-4107-bfe0-d7eceaa1bd6a.jpg
 input/sydney-opera-house/6f9787dc-d208-4035-8d15-9e505be457d3.jpg
 input/sydney-opera-house/0d1ba3d8-0253-4ef0-b730-010ee38cceda.jpg
-input/sydney-opera-house/d32cc754-4a31-4393-b3f9-8825cb4cdc61.jpg
 input/sydney-opera-house/e486ceb4-e830-4b11-9387-57ca7a592c5f.jpg
 input/sydney-opera-house/893a4a9e-2158-4880-b73c-43c7bf8ae787.jpg
 input/sydney-opera-house/7f551502-b635-40be-8b82-66033f3772a3.jpg
@@ -96,5 +92,9 @@ input/sydney-opera-house/1231c121-e5a8-4181-b07e-d109735d63f8.jpg
 input/sydney-opera-house/6fc9166a-1006-4ec8-8e06-3a3c68358430.jpg
 input/sydney-opera-house/6240afd0-a518-4ff5-b807-51e12748ef7c.jpg
 input/sydney-opera-house/cda60e3d-d6ba-417a-8590-9cb74da1096c.jpg
-input/sydney-opera-house/779a86fb-6739-4a45-9585-233b9fada080.jpg
 input/sydney-opera-house/5cd14716-9a57-4559-9072-8a67fe33de50.jpg
+input/sydney-opera-house/45e0bba8-3c3c-4f8f-9cca-6d6b1cf131bb.jpg
+input/sydney-opera-house/bab8464a-1c0a-4ab6-811d-d2dca415d6a2.jpg
+input/sydney-opera-house/5b206297-e494-48da-bffd-6b57ca11819e.jpg
+input/sydney-opera-house/af11cd37-efac-4cc0-bef0-9a1ab69d8854.jpg
+input/sydney-opera-house/4c8975d0-79c0-49c9-95b6-8fbdd71c1cbb.jpg
