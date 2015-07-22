@@ -18,6 +18,7 @@ num_instance=$5
 queuing_policy=$6
 freq=$7
 
+# core 1 to 5
 pinned_core=1
 i=0
 

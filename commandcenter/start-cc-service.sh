@@ -18,7 +18,7 @@ tail_percentile=$6
 gobal_power_budget=$7
 execution_mode=$8
 decision_policy=$9
-withdraw_instance=$10
+withdraw_instance=${10}
 
 pinned_core=31
 
