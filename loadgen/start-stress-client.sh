@@ -13,8 +13,13 @@ query_num=$4
 warm_up_account=$5
 load_type=$6
 operation_type=$7
+burst_high_sample_file=$8
+burst_low_sample_file=$9
+burst_switch_number=${10}
+burst_ratio=${11}
 
-pinned_core=30
+
+pinned_core=24
 
 taskset -c $pinned_core java -XX:+UseConcMarkSweepGC -server -Xms1024m -Xmx2048m \
- -jar stressclient.jar $scheduler_ip $scheduler_port $distribution_file $query_num $warm_up_account $load_type $operation_type 2>&1 &
+ -jar stressclient.jar $scheduler_ip $scheduler_port $distribution_file $query_num $warm_up_account $load_type $operation_type $burst_high_sample_file $burst_low_sample_file $burst_switch_number $burst_ratio 2>&1 &

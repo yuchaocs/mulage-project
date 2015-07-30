@@ -26,7 +26,10 @@ num_instance=$5
 queuing_policy=$6
 
 # core 11 to 15
+# for mulage
 pinned_core=11
+# for pegasus
+# pinned_core=7
 running_frequency=$7
 i=0
 

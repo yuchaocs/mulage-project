@@ -19,8 +19,9 @@ gobal_power_budget=$7
 execution_mode=$8
 decision_policy=$9
 withdraw_instance=${10}
+qos_target=${11}
 
-pinned_core=31
+pinned_core=25
 
 taskset -c $pinned_core java -XX:+UseConcMarkSweepGC -server -Xms1024m -Xmx2048m \
- -jar commandcenter.jar $scheduler_port $adjust_interval $withdraw_interval $warm_up_account $adjust_threshold $tail_percentile $gobal_power_budget $execution_mode $decision_policy $withdraw_instance 2>&1 &
+ -jar commandcenter.jar $scheduler_port $adjust_interval $withdraw_interval $warm_up_account $adjust_threshold $tail_percentile $gobal_power_budget $execution_mode $decision_policy $withdraw_instance $qos_target 2>&1 &

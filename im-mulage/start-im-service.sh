@@ -19,7 +19,7 @@ queuing_policy=$6
 freq=$7
 
 # core 6 to 10
-pinned_core=6
+pinned_core=4
 i=0
 
 while [ $i -lt $num_instance ]
