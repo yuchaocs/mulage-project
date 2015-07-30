@@ -140,6 +140,11 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 			cout << "Successfully steal " << num << " queries from victim" << endl;
 //			cout << "Obtain " << queryList.size() << "queries from " << victim << endl;
 
+			for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
+				submitQuery(*it);
+			}	
+		
+/*
 			if(this->QUEUE_TYPE == "priority") {
 				for(std::vector<::QuerySpec>::iterator it = queryList.begin(); it != queryList.end(); ++it) {
 					struct timeval now;
@@ -161,6 +166,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 					this->fifo_qq.push(newFIFOSpec);
 				}
 			}
+			*/
 			
 			tClient_service.close();
 			return num;
@@ -193,7 +199,9 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 						struct timeval now;
 						gettimeofday(&now, 0);
 						int64_t current=(now.tv_sec*1E6+now.tv_usec)/1000;
-						querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
+						querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).serving_start_time = current;
+						querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).serving_end_time = current;
+//						querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time = current - querySpec->qs.timestamp.at(querySpec->qs.timestamp.size()-1).queuing_start_time;
 						querySpecList.push_back(querySpec->qs);
 						stealNum--;
 						cout << "steals " << num << "th queries" << endl;
@@ -259,7 +267,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				FIFO_QuerySpec newFIFOSpec(query);
 //				newFIFOSpec.qs.timestamp.push_back(current);
 				newFIFOSpec.qs.timestamp.push_back(latencySpec);
-				
+/*				
 				newFIFOSpec.qs.floatingBudget=newFIFOSpec.qs.budget;
 				
 				ThreadSafePriorityQueue<FIFO_QuerySpec> waiting_queries;		//query queue
@@ -273,6 +281,7 @@ class SpeechRecognitionServiceHandler : public IPAServiceIf {
 				int length = waiting_queries.size();	
 				for(int i=0;i<length;i++)
 					fifo_qq.push( *(waiting_queries.wait_and_pop()) );
+*/
 				// 2. put the query to a thread saft queue structure
 				fifo_qq.push(newFIFOSpec);
 			}
